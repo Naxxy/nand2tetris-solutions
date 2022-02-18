@@ -1,0 +1,26 @@
+/** Implements a graphical square. */
+class Circle {
+    field int x, y; // Position
+    field int radius;
+
+    constructor Circle new(int Ax, int Ay) {
+        let x = Ax;
+        let y = Ay;
+        let radius = 8;
+        do draw();
+        return this;
+    }
+
+    /** Disposes this square. */
+    method void dispose() {
+       do Memory.deAlloc(this);
+       return;
+    }
+
+    /** Draws the square on the screen. */
+    method void draw() {
+       do Screen.setColor(true);
+       do Screen.drawCircle(x, y, radius);
+       return;
+    }
+}

@@ -1,0 +1,80 @@
+/** Initializes a new Snake game and starts running it. */
+class Main {
+    function void main() {
+
+        // --- Variable declaration ---
+        var Square square;
+        var LinkedList list, listHead;
+        var int i, x, y;
+        var int squareSize;
+
+        // --- Create linkedList ---
+        let squareSize = 16;
+        let square = Square.new(2, 3);
+        let listHead = LinkedList.new(square);
+
+        let square = Square.new(3, 3);
+        do listHead.setNext(LinkedList.new(square));
+        let list = listHead.next();
+
+        let square = Square.new(4, 3);
+        do list.setNext(LinkedList.new(square));
+        
+        do Sys.wait(1000);
+
+        // --- Loop to move ---
+        let i = 0;
+        let list = listHead;
+        while(i < 5) {
+            // Get the last item
+            while(list.hasNext()) {
+                let list = list.next();
+            }
+
+            // Make the last item the first item
+            do list.setNext(listHead);
+            let listHead = list;
+            let list = listHead.next();
+
+            // Move the last item to the front of the snake
+            let square = listHead.node();
+            let x = square.getGridX();
+            let y = square.getGridY();
+            do Output.printString("X and Y values are:");
+            do Output.println();
+            do Output.printInt(x);
+            do Output.println();
+            do Output.printInt(y);
+
+
+            let square = list.node();
+            do square.erase();
+            do square.setGridX((x + 1) * squareSize);
+            do square.setGridY(y);
+            do square.draw();
+
+            // See the results
+            do Sys.wait(1000);
+        }
+
+
+
+
+
+
+
+        // var Circle food;
+        // var Snake snake;
+        // var int i;
+
+        // let food = Circle.new(90, 30);
+        // let snake = Snake.new();
+
+        // Delay to make sure everything draws
+        do Sys.wait(5000);
+
+        // do game.run();
+        // do game.dispose();
+        return;
+    }
+}

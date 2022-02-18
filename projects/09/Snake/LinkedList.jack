@@ -1,0 +1,61 @@
+/* Implements a basic linked list */
+class LinkedList {
+    field Square node;
+    field LinkedList next;
+
+    //
+    // Lifecycle
+    //
+    constructor LinkedList new(Square Anode) {
+        let node = Anode;
+        let next = null;
+        return this;
+    }
+
+    /** Disposes this square. */
+    method void dispose() {
+        if(~(next = null)) {
+            do next.dispose();
+        }
+
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    //
+    // Accessors
+    //
+    method LinkedList next() {
+        return next;
+    }
+
+    method Square node() {
+        return node;
+    }
+
+    method boolean hasNext() {
+        return ~(next = null);
+    }
+
+    //
+    // Set Values
+    //
+    method void setNode(Square Asquare) {
+        let node = Asquare;
+        return;
+    }
+
+    method void setNext(LinkedList list) {
+        if(~(next = null)) {
+            do removeNext();
+        }
+        let next = list;
+        return;
+    }
+
+    method void removeNext() {
+        do next.dispose();
+        let next = null;
+        return;
+    }
+}

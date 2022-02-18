@@ -1,0 +1,51 @@
+/** Implements the snake for the snake game. */
+class Snake {
+    field Array snakeSquares;
+    field int snakeSize;
+    field int squareSize;
+
+    /** Constructs a new square with a given location and size. */
+    constructor Snake new() {
+        let snakeSize = 2;
+        let squareSize = 16;
+        let snakeSquares = Array.new(snakeSize);
+        let snakeSquares[0] = Square.new(0, 0);
+        let snakeSquares[1] = Square.new(0, 16);
+        do draw();
+        return this;
+    }
+
+    /** Disposes this square. */
+    method void dispose() {
+        // Clear the memory for the squares
+        var Square square;
+        var int i;
+        let i = 0;
+
+        while(i < snakeSize) {
+            let square = snakeSquares[i];
+            do square.dispose();
+        }
+
+        // Clear the memory for this object
+       do Memory.deAlloc(this);
+       return;
+    }
+
+    /** Draws the square on the screen. */
+    method void draw() {
+        var int i;
+        var Square square;
+
+        let i = 0;
+        while(i < snakeSize) {
+            let square = snakeSquares[i];
+            do square.draw();
+        }
+       return;
+    }
+
+    //
+    // Move the snake
+    //
+}

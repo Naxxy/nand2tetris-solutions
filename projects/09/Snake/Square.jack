@@ -1,0 +1,62 @@
+/** Implements a graphical square. */
+class Square {
+    field int x, y; // screen location of the square's top-left corner
+    field int size;
+
+    //
+    // Lifecycle
+    //
+    /** Constructs a new square with a given location and size. */
+    constructor Square new(int Ax, int Ay) {
+       let size = 16;
+       let x = Ax * size;
+       let y = Ay * size;
+       do draw();
+       return this;
+    }
+
+    /** Disposes this square. */
+    method void dispose() {
+       do Memory.deAlloc(this);
+       return;
+    }
+
+    //
+    // Graphical
+    //
+
+    /** Draws the square on the screen. */
+    method void draw() {
+       do Screen.setColor(true);
+       do Screen.drawRectangle(x, y, x + size, y + size);
+       return;
+    }
+
+    /** Draws the square on the screen. */
+    method void erase() {
+       do Screen.setColor(false);
+       do Screen.drawRectangle(x, y, x + size, y + size);
+       return;
+    }
+
+    //
+    // Accessor
+    //
+    method int getGridX() {
+        return x; // / size;
+    }
+
+    method int getGridY() {
+        return y; // / size;
+    }
+
+    method void setGridX(int Ax) {
+        let x = Ax * size;
+        return;
+    }
+
+    method void setGridY(int Ay) {
+        let y = Ay * size;
+        return;
+    }
+}
