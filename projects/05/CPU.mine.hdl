@@ -1,0 +1,128 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/05/CPU.hdl
+
+/**
+ * The Hack CPU (Central Processing unit), consisting of an ALU,
+ * two registers named A and D, and a program counter named PC.
+ * The CPU is designed to fetch and execute instructions written in
+ * the Hack machine language. In particular, functions as follows:
+ * Executes the inputted instruction according to the Hack machine
+ * language specification. The D and A in the language specification
+ * refer to CPU-resident registers, while M refers to the external
+ * memory location addressed by A, i.e. to Memory[A]. The inM input
+ * holds the value of this location. If the current instruction needs
+ * to write a value to M, the value is placed in outM, the address
+ * of the target location is placed in the addressM output, and the
+ * writeM control bit is asserted. (When writeM==0, any value may
+ * appear in outM). The outM and writeM outputs are combinational:
+ * they are affected instantaneously by the execution of the current
+ * instruction. The addressM and pc outputs are clocked: although they
+ * are affected by the execution of the current instruction, they commit
+ * to their new values only in the next time step. If reset==1 then the
+ * CPU jumps to address 0 (i.e. pc is set to 0 in next time step) rather
+ * than to the address resulting from executing the current instruction.
+ */
+
+
+ // if (zx == 1) set x = 0        // 16-bit constant
+ // if (nx == 1) set x = !x       // bitwise not
+ // if (zy == 1) set y = 0        // 16-bit constant
+ // if (ny == 1) set y = !y       // bitwise not
+ // if (f == 1)  set out = x + y (ELSE) set out = x & y // integer 2's complement addition ELSE bitwise and
+ // if (no == 1) set out = !out   // bitwise not
+ // if (out == 0) set zr = 1
+ // if (out < 0) set ng = 1
+
+// TOP TWO BITS ARE A/M, NEXT TWO BITS ARE D, NEXT TWO BITS ARE LOGIC
+
+
+ CHIP CPU {
+
+     IN  inM[16],         // M value input  (M = contents of RAM[A])
+         instruction[16], // Instruction for execution
+         reset;           // Signals whether to re-start the current
+                          // program (reset==1) or continue executing
+                          // the current program (reset==0).
+
+     OUT outM[16],        // M value output
+         writeM,          // Write to M?
+         addressM[15],    // Address in data memory (of M)
+         pc[15];          // address of next instruction
+
+     PARTS:
+
+     //
+     // Instruction format:
+     // A: 0vvv vvvv vvvv vvvv  (vv...v = 15-bit value)
+     // C: 111 a cccccc ddd jjj = (111 a ccccc ADM <=>)
+     //
+
+     // Type of instruction
+     Not(in=instruction[15], out=Ainstruction);
+     Not(in=Ainstruction, out=Cinstruction);
+
+
+
+     // A register
+     And(a=Cinstruction, b=instruction[5], out=aluToA);     // C-inst and dest=A
+     Mux16(a=instruction, b=aluOut, sel=aluToA, out=aRegIn);
+
+     Or(a=Ainstruction, b=aluToA, out=loadA);       // A-inst or (C-inst and dest=A)
+     ARegister(in=aRegIn, load=loadA, out=aRegOut, out[0..14]=addressM);
+
+
+
+     // D register
+     And(a=Cinstruction, b=instruction[4], out=loadD);      // C-inst and dest=D
+     DRegister(in=aluOut, load=loadD, out=dRegOut);
+
+
+
+     // ALU input
+     And(a=Cinstruction, b=instruction[12], out=AMsel);     // C-inst and code-type = M
+     Mux16(a=inM, b=aRegOut, sel=AMsel, out=AMout);
+
+
+
+
+
+    // ALU
+    And(a=Cinstruction, b=instruction[11], out=zx);
+    And(a=Cinstruction, b=instruction[10], out=nx);
+    And(a=Cinstruction, b=instruction[9], out=zy);
+    And(a=Cinstruction, b=instruction[8], out=ny);
+    And(a=Cinstruction, b=instruction[7], out=f);
+    And(a=Cinstruction, b=instruction[6], out=no);
+    ALU(
+        x=dRegOut, y=AMout,
+        zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no,
+        zr=zr, ng=ng, out=outM, out=aluOut
+    );
+
+
+
+
+
+    // PC
+    Or(a=zr, b=ng, out=notpos);
+    Not(in=notpos, out=pos);
+
+    And(a=Cinstruction, b=instruction[0], out=jgt);
+    And(a=Cinstruction, b=instruction[1], out=jeq);
+    And(a=Cinstruction, b=instruction[2], out=jlt);
+
+    And(a=jgt, b=pos, out=j1);
+    And(a=jeq, b=zr, out=j2);
+    And(a=jlt, b=ng, out=j3);
+
+    Or(a=j1, b=j2, out=j12);
+    Or(a=j12, b=j3, out=jump);
+
+    PC(in=aRegOut, load=jump, inc=true, reset=reset, out[0..14]=pc);
+
+    // Check C-code or A-code
+    // DONE
+    And(a=Cinstruction, b=instruction[3], out=writeM);
+}
