@@ -17,8 +17,9 @@ class Square {
 
     /** Disposes this square. */
     method void dispose() {
-       do Memory.deAlloc(this);
-       return;
+        do erase();
+        do Memory.deAlloc(this);
+        return;
     }
 
     //
@@ -43,11 +44,19 @@ class Square {
     // Accessor
     //
     method int getGridX() {
-        return x; // / size;
+        if(x = 0) {
+            return 0;
+        } else {
+            return x / size;
+        }
     }
 
     method int getGridY() {
-        return y; // / size;
+        if(y = 0) {
+            return 0;
+        } else {
+            return y / size;
+        }
     }
 
     method void setGridX(int Ax) {
