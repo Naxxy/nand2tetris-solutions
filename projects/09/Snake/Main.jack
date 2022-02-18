@@ -6,7 +6,7 @@ class Main {
         // --- Variable declaration ---
         //
         var Square square;
-        var LinkedList list, listHead;
+        var LinkedList list, listParent, listHead;
         var int i, x, y;
         var int squareSize, listLength;
 
@@ -25,13 +25,6 @@ class Main {
         do list.setNext(LinkedList.new(square));
         let listLength = 3;
 
-        // DEBUG - print values
-        let list = list.next();
-        let square = list.square();
-        let x = square.getGridX();
-        let y = square.getGridY();
-        do Main.printValues(x, y);
-
         do Sys.wait(1000);
 
         //
@@ -43,12 +36,17 @@ class Main {
 
             // Get the last item
             let list = listHead;
+            let listParent = listHead;
+            do Main.printListValues(list);
             while(list.hasNext()) {
+                let listParent = list;
                 let list = list.next();
+                do Main.printListValues(list);
             }
 
             // Dispose of the last item
             do list.dispose();
+            do listParent.setNext(null);
 
             // Get the (x, y) of the head
             let list = listHead;
@@ -65,6 +63,7 @@ class Main {
             do listHead.setNext(list);
 
             // See the results
+            let i = i + 1;
             do Sys.wait(1000);
         }
 
@@ -73,7 +72,17 @@ class Main {
         //
         do Output.println();
         do Output.printString("PROGRAM FINISHED");
-        do Sys.wait(5000);
+        return;
+    }
+
+    function void printListValues(LinkedList list) {
+        var Square square;
+        var int x, y;
+        let square = list.square();
+        let x = square.getGridX();
+        let y = square.getGridY();
+        do Output.printString("> ");
+        do Main.printValues(x, y);
         return;
     }
 
