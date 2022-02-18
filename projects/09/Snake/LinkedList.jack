@@ -1,13 +1,13 @@
 /* Implements a basic linked list */
 class LinkedList {
-    field Square node;
+    field Square square;
     field LinkedList next;
 
     //
     // Lifecycle
     //
-    constructor LinkedList new(Square Anode) {
-        let node = Anode;
+    constructor LinkedList new(Square Asquare) {
+        let square = Asquare;
         let next = null;
         return this;
     }
@@ -16,6 +16,9 @@ class LinkedList {
     method void dispose() {
         if(~(next = null)) {
             do next.dispose();
+        }
+        if(~(square = null)) {
+            do square.dispose();
         }
 
         do Memory.deAlloc(this);
@@ -29,8 +32,8 @@ class LinkedList {
         return next;
     }
 
-    method Square node() {
-        return node;
+    method Square square() {
+        return square;
     }
 
     method boolean hasNext() {
@@ -41,7 +44,7 @@ class LinkedList {
     // Set Values
     //
     method void setNode(Square Asquare) {
-        let node = Asquare;
+        let square = Asquare;
         return;
     }
 
