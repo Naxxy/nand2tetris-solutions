@@ -1,0 +1,75 @@
+/** Implements the Snake game logic. */
+class Game {
+    field int score;
+    field Snake snake;
+    field Circle food;
+
+    constructor Game new() {
+        let score = 0;
+        let snake = Snake.new(16);
+        let food = Circle.new(2, 2, 16 / 2);
+
+        do Output.printString("SCORE: 0");
+
+        return this;
+    }
+
+    /** Disposes this square. */
+    method void dispose() {
+        do snake.dispose();
+        do food.dispose();
+
+       do Memory.deAlloc(this);
+       return;
+    }
+
+    method void run() {
+        //
+        // --- MOVE SNAKE ---
+        //
+        do snake.moveRight(); do updateScore(1); do Sys.wait(1000);
+        do snake.moveRight(); do updateScore(2); do Sys.wait(1000);
+        do snake.moveRight(); do updateScore(3); do Sys.wait(1000);
+
+        do snake.moveUp(); do updateScore(1); do Sys.wait(1000);
+        do snake.moveUp(); do updateScore(0); do Sys.wait(1000);
+        do snake.moveUp(); do updateScore(5); do Sys.wait(1000);
+
+        do snake.moveLeft(); do updateScore(12); do Sys.wait(1000);
+        do snake.moveLeft(); do updateScore(20); do Sys.wait(1000);
+        do snake.moveLeft(); do updateScore(11); do Sys.wait(1000);
+
+        do snake.moveDown(); do updateScore(1); do Sys.wait(1000);
+        do snake.moveDown(); do updateScore(11); do Sys.wait(1000);
+        do snake.moveDown(); do updateScore(111); do Sys.wait(1000);
+
+        return;
+    }
+
+    //
+    // ACCESSORS
+    //
+
+    // TODO
+
+    //
+    // HELPERS
+    //
+    method void updateScore(int value) {
+        var int i;
+
+        let i = score;
+        if(i = 0) {
+            do Output.backSpace(); // Special case
+        }
+        while(i > 0) {
+            do Output.backSpace();
+            let i = i / 10;
+        }
+
+        let score = score + value;
+        do Output.printInt(score);
+
+        return;
+    }
+}

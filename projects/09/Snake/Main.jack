@@ -5,58 +5,15 @@ class Main {
         //
         // --- Variable declaration ---
         //
-        var Snake snake;
-        var Circle food;
-        var score;
+        var Game game;
 
-        //
         // --- INITIALISE GAME ---
-        //
-        let snake = Snake.new(16);
-        let food = Circle.new(2, 2, 16 / 2);
-        let score = 0;
-        do Output.printString("SCORE: 0");
+        let game = Game.new();
+        do game.run();
 
-        do Sys.wait(1000);
-
-        //
-        // --- MOVE SNAKE ---
-        //
-        do snake.moveRight(); do Sys.wait(1000); do updateScore(1);
-        do snake.moveRight(); do Sys.wait(1000); do updateScore(2);
-        do snake.moveRight(); do Sys.wait(1000); do updateScore(3);
-
-        do snake.moveUp(); do Sys.wait(1000); do updateScore(1);
-        do snake.moveUp(); do Sys.wait(1000); do updateScore(0);
-        do snake.moveUp(); do Sys.wait(1000); do updateScore(5);
-
-        do snake.moveLeft(); do Sys.wait(1000); do updateScore(12);
-        do snake.moveLeft(); do Sys.wait(1000); do updateScore(20);
-        do snake.moveLeft(); do Sys.wait(1000); do updateScore(11);
-
-        do snake.moveDown(); do Sys.wait(1000); do updateScore(1);
-        do snake.moveDown(); do Sys.wait(1000); do updateScore(11);
-        do snake.moveDown(); do Sys.wait(1000); do updateScore(111);
-
-
-        //
         // --- FINISH CONDITION ---
-        //
         do Output.println();
         do Output.printString("GAME OVER");
-        return;
-    }
-
-    function void updateScore(int value) {
-        var i;
-
-        let i = score;
-        while(i > 0) {
-            do Output.backSpace();
-            let i = i / 10;
-        }
-        do Output.printInt(score);
-
         return;
     }
 
