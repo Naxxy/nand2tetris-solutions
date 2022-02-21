@@ -5,94 +5,59 @@ class Main {
         //
         // --- Variable declaration ---
         //
-        var Square square;
-        var LinkedList list, listParent, listHead;
-        var int i, x, y;
-        var int squareSize, listLength;
+        var Snake snake;
+        var Circle food;
+        var score;
 
         //
-        // --- Create linkedList ---
+        // --- INITIALISE GAME ---
         //
-        let squareSize = 16;
-        let square = Square.new(4, 3);
-        let listHead = LinkedList.new(square);
-
-        let square = Square.new(3, 3);
-        do listHead.setNext(LinkedList.new(square));
-        let list = listHead.next();
-
-        let square = Square.new(2, 3);
-        do list.setNext(LinkedList.new(square));
-        let listLength = 3;
+        let snake = Snake.new(16);
+        let food = Circle.new(2, 2, 16 / 2);
+        let score = 0;
+        do Output.printString("SCORE: 0");
 
         do Sys.wait(1000);
 
         //
-        // --- Loop to move ---
+        // --- MOVE SNAKE ---
         //
-        let i = 0;
-        let list = listHead;
-        while(i < 5) {
+        do snake.moveRight(); do Sys.wait(1000); do updateScore(1);
+        do snake.moveRight(); do Sys.wait(1000); do updateScore(2);
+        do snake.moveRight(); do Sys.wait(1000); do updateScore(3);
 
-            // Get the last item
-            let list = listHead;
-            let listParent = listHead;
-            do Main.printListValues(list);
-            while(list.hasNext()) {
-                let listParent = list;
-                let list = list.next();
-                do Main.printListValues(list);
-            }
+        do snake.moveUp(); do Sys.wait(1000); do updateScore(1);
+        do snake.moveUp(); do Sys.wait(1000); do updateScore(0);
+        do snake.moveUp(); do Sys.wait(1000); do updateScore(5);
 
-            // Dispose of the last item
-            do list.dispose();
-            do listParent.setNext(null);
+        do snake.moveLeft(); do Sys.wait(1000); do updateScore(12);
+        do snake.moveLeft(); do Sys.wait(1000); do updateScore(20);
+        do snake.moveLeft(); do Sys.wait(1000); do updateScore(11);
 
-            // Get the (x, y) of the head
-            let list = listHead;
-            let square = list.square();
-            let x = square.getGridX();
-            let y = square.getGridY();
+        do snake.moveDown(); do Sys.wait(1000); do updateScore(1);
+        do snake.moveDown(); do Sys.wait(1000); do updateScore(11);
+        do snake.moveDown(); do Sys.wait(1000); do updateScore(111);
 
-            // DEBUG - print values
-            do Main.printValues(x + 1, y);
 
-            // Add a new item to the head
-            let square = Square.new(x + 1, y);
-            let listHead = LinkedList.new(square);
-            do listHead.setNext(list);
+        //
+        // --- FINISH CONDITION ---
+        //
+        do Output.println();
+        do Output.printString("GAME OVER");
+        return;
+    }
 
-            // See the results
-            let i = i + 1;
-            do Sys.wait(1000);
+    function void updateScore(int value) {
+        var i;
+
+        let i = score;
+        while(i > 0) {
+            do Output.backSpace();
+            let i = i / 10;
         }
+        do Output.printInt(score);
 
-        //
-        // --- COMPLETE ---
-        //
-        do Output.println();
-        do Output.printString("PROGRAM FINISHED");
         return;
     }
 
-    function void printListValues(LinkedList list) {
-        var Square square;
-        var int x, y;
-        let square = list.square();
-        let x = square.getGridX();
-        let y = square.getGridY();
-        do Output.printString("> ");
-        do Main.printValues(x, y);
-        return;
-    }
-
-    function void printValues(int x, int y) {
-        do Output.printString("X and Y values are: (");
-        do Output.printInt(x);
-        do Output.printString(", ");
-        do Output.printInt(y);
-        do Output.printString(")");
-        do Output.println();
-        return;
-    }
 }

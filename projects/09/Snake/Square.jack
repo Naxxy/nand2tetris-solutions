@@ -43,6 +43,14 @@ class Square {
     //
     // Accessor
     //
+    method int getX() {
+        return x;
+    }
+
+    method int getY() {
+        return y;
+    }
+
     method int getGridX() {
         if(x = 0) {
             return 0;

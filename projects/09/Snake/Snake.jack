@@ -1,51 +1,201 @@
 /** Implements the snake for the snake game. */
 class Snake {
-    field Array snakeSquares;
+    field LinkedList snakeHead;
     field int snakeSize;
     field int squareSize;
 
     /** Constructs a new square with a given location and size. */
-    constructor Snake new() {
-        let snakeSize = 2;
-        let squareSize = 16;
-        let snakeSquares = Array.new(snakeSize);
-        let snakeSquares[0] = Square.new(0, 0);
-        let snakeSquares[1] = Square.new(0, 16);
-        do draw();
+    constructor Snake new(int ASquareSize) {
+        // Variables
+        var LinkedList list;
+        var Square square;
+
+        // Initialise primitives
+        let snakeSize = 3;
+        let squareSize = ASquareSize;
+
+        // Build snake body
+        let square = Square.new(17, 14);
+        let snakeHead = LinkedList.new(square);
+
+        let square = Square.new(16, 14);
+        do snakeHead.setNext(LinkedList.new(square));
+        let list = snakeHead.next();
+
+        let square = Square.new(15, 14);
+        do list.setNext(LinkedList.new(square));
+
         return this;
     }
 
     /** Disposes this square. */
     method void dispose() {
-        // Clear the memory for the squares
-        var Square square;
-        var int i;
-        let i = 0;
-
-        while(i < snakeSize) {
-            let square = snakeSquares[i];
-            do square.dispose();
-        }
-
         // Clear the memory for this object
-       do Memory.deAlloc(this);
-       return;
-    }
-
-    /** Draws the square on the screen. */
-    method void draw() {
-        var int i;
-        var Square square;
-
-        let i = 0;
-        while(i < snakeSize) {
-            let square = snakeSquares[i];
-            do square.draw();
-        }
-       return;
+        do snakeHead.dispose();
+        do Memory.deAlloc(this);
+        return;
     }
 
     //
     // Move the snake
     //
+    method void moveRight() {
+        var LinkedList list, listParent;
+        var Square square;
+        var int x, y;
+
+        // Get rid of tail
+        do _disposeTail();
+
+        // Get the (x, y) of the head
+        let list = snakeHead;
+        let square = list.square();
+        let x = square.getGridX();
+        let y = square.getGridY();
+
+        // Add a new item to the head
+        let square = Square.new(x + 1, y);
+        let snakeHead = LinkedList.new(square);
+        do snakeHead.setNext(list);
+
+        return;
+    }
+
+    method void moveLeft() {
+        var LinkedList list, listParent;
+        var Square square;
+        var int x, y;
+
+        // Get rid of tail
+        do _disposeTail();
+
+        // Get the (x, y) of the head
+        let list = snakeHead;
+        let square = list.square();
+        let x = square.getGridX();
+        let y = square.getGridY();
+
+        // Add a new item to the head
+        let square = Square.new(x - 1, y);
+        let snakeHead = LinkedList.new(square);
+        do snakeHead.setNext(list);
+
+        return;
+    }
+
+    method void moveUp() {
+        var LinkedList list, listParent;
+        var Square square;
+        var int x, y;
+
+        // Get rid of tail
+        do _disposeTail();
+
+        // Get the (x, y) of the head
+        let list = snakeHead;
+        let square = list.square();
+        let x = square.getGridX();
+        let y = square.getGridY();
+
+        // Add a new item to the head
+        let square = Square.new(x, y - 1);
+        let snakeHead = LinkedList.new(square);
+        do snakeHead.setNext(list);
+
+        return;
+    }
+
+    method void moveDown() {
+        var LinkedList list, listParent;
+        var Square square;
+        var int x, y;
+
+        // Get rid of tail
+        do _disposeTail();
+
+        // Get the (x, y) of the head
+        let list = snakeHead;
+        let square = list.square();
+        let x = square.getGridX();
+        let y = square.getGridY();
+
+        // Add a new item to the head
+        let square = Square.new(x, y + 1);
+        let snakeHead = LinkedList.new(square);
+        do snakeHead.setNext(list);
+
+        return;
+    }
+
+    //
+    // HELPERS
+    //
+    method void _disposeTail() {
+        var LinkedList list, listParent;
+        var Square square;
+
+        // Get the last item
+        let list = snakeHead;
+        let listParent = snakeHead;
+        while(list.hasNext()) {
+            let listParent = list;
+            let list = list.next();
+        }
+
+        // Dispose of the last item
+        do list.dispose();
+        do listParent.setNext(null);
+
+        // Redraw tail parent to fix graphical glitch
+        let square = listParent.square();
+        do square.draw();
+
+        return;
+    }
+
+    method void printSnakeHead() {
+        var Square square;
+        var int x, y;
+
+        let square = snakeHead.square();
+        let x = square.getGridX();
+        let y = square.getGridY();
+        do Output.printString("SNAKE HEAD > ");
+        do Output.printString("(");
+        do Output.printInt(x);
+        do Output.printString(", ");
+        do Output.printInt(y);
+        do Output.printString(")");
+
+        return;
+    }
+
+    method void printSnake() {
+        var Square square;
+        var int x, y, i;
+        var LinkedList list;
+
+        do Output.printString("SNAKE");
+
+        let i = 0;
+        let list = snakeHead;
+        while(i < snakeSize) {
+            let square = list.square();
+            let x = square.getX();
+            let y = square.getY();
+
+            do Output.printString(" > ");
+            do Output.printString("(");
+            do Output.printInt(x);
+            do Output.printString(", ");
+            do Output.printInt(y);
+            do Output.printString(")");
+
+            // Get next
+            let list = list.next();
+            let i = i + 1;
+        }
+
+        return;
+    }
 }
