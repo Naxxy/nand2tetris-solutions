@@ -1,8 +1,8 @@
 /** Implements the snake for the snake game. */
 class Snake {
     field LinkedList snakeHead;
-    field int snakeSize;
-    field int squareSize;
+    field int screenWidth, screenHeight;
+    field int snakeSize, squareSize;
 
     /** Constructs a new square with a given location and size. */
     constructor Snake new(int ASquareSize) {
@@ -11,6 +11,8 @@ class Snake {
         var Square square;
 
         // Initialise primitives
+        let screenWidth = 512;
+        let screenHeight = 256;
         let snakeSize = 3;
         let squareSize = ASquareSize;
 
@@ -39,28 +41,6 @@ class Snake {
     //
     // Move the snake
     //
-    method void moveRight() {
-        var LinkedList list, listParent;
-        var Square square;
-        var int x, y;
-
-        // Get rid of tail
-        do _disposeTail();
-
-        // Get the (x, y) of the head
-        let list = snakeHead;
-        let square = list.square();
-        let x = square.getGridX();
-        let y = square.getGridY();
-
-        // Add a new item to the head
-        let square = Square.new(x + 1, y);
-        let snakeHead = LinkedList.new(square);
-        do snakeHead.setNext(list);
-
-        return;
-    }
-
     method void moveLeft() {
         var LinkedList list, listParent;
         var Square square;
@@ -105,6 +85,28 @@ class Snake {
         return;
     }
 
+    method void moveRight() {
+        var LinkedList list, listParent;
+        var Square square;
+        var int x, y;
+
+        // Get rid of tail
+        do _disposeTail();
+
+        // Get the (x, y) of the head
+        let list = snakeHead;
+        let square = list.square();
+        let x = square.getGridX();
+        let y = square.getGridY();
+
+        // Add a new item to the head
+        let square = Square.new(x + 1, y);
+        let snakeHead = LinkedList.new(square);
+        do snakeHead.setNext(list);
+
+        return;
+    }
+
     method void moveDown() {
         var LinkedList list, listParent;
         var Square square;
@@ -128,8 +130,121 @@ class Snake {
     }
 
     //
+    // COLLISION CHECKS
+    //
+    method boolean canMoveLeft() {
+        var LinkedList list;
+        var Square square;
+        var int xHead, yHead;
+
+        // Get head (x, y) for boundary / collision check
+        let square = snakeHead.square();
+        let xHead = square.getGridX();
+        let yHead = square.getGridY();
+        let xHead = xHead - 1; // For moving left
+
+        // Out of bounds
+        if((xHead * squareSize) < 0) {
+            do Output.println();
+            do Output.printString("GAME OVER: Collided with left wall!");
+            do Output.println();
+            return false;
+        }
+
+        return ~_bodyCollision(xHead, yHead);
+    }
+
+    method boolean canMoveUp() {
+        var LinkedList list;
+        var Square square;
+        var int xHead, yHead;
+
+        // Get head (x, y) for boundary / collision check
+        let square = snakeHead.square();
+        let xHead = square.getGridX();
+        let yHead = square.getGridY();
+        let yHead = yHead - 1; // For moving up
+
+        if((yHead * squareSize) < 0) {
+            do Output.printString("GAME OVER: Collided with top wall!");
+            do Output.println();
+            return false;
+        }
+
+        return ~_bodyCollision(xHead, yHead);
+    }
+
+    method boolean canMoveRight() {
+        var LinkedList list;
+        var Square square;
+        var int xHead, yHead;
+
+        // Get head (x, y) for boundary / collision check
+        let square = snakeHead.square();
+        let xHead = square.getGridX();
+        let yHead = square.getGridY();
+        let xHead = xHead + 1; // For moving right
+
+        if((xHead * squareSize) > screenWidth) {
+            do Output.printString("GAME OVER: Collided with right wall!");
+            do Output.println();
+            return false;
+        }
+
+        return ~_bodyCollision(xHead, yHead);
+    }
+
+    method boolean canMoveDown() {
+        var LinkedList list;
+        var Square square;
+        var int xHead, yHead;
+
+        // Get head (x, y) for boundary / collision check
+        let square = snakeHead.square();
+        let xHead = square.getGridX();
+        let yHead = square.getGridY();
+        let yHead = yHead + 1; // For moving down
+
+        if((yHead * squareSize) > screenHeight) {
+            do Output.printString("GAME OVER: Collided with bottom wall!");
+            do Output.println();
+            return false;
+        }
+
+        return ~_bodyCollision(xHead, yHead);
+    }
+
+    //
     // HELPERS
     //
+    method boolean _bodyCollision(int xHead, int yHead) {
+        var int x, y;
+        var LinkedList list;
+        var Square square;
+
+        let list = snakeHead;
+        while(~(list = null)) {
+            // Get body location
+            let square = list.square();
+            let x = square.getGridX();
+            let y = square.getGridY();
+
+            // Check body collision
+            if((x = xHead) & (y = yHead)) {
+                do Output.printString("Collided with body at: (");
+                do Output.printInt(x);
+                do Output.printString(", ");
+                do Output.printInt(y);
+                do Output.printString(")!");
+                do Output.println();
+                return true;
+            }
+
+            let list = list.next();
+        }
+        return false;
+    }
+
     method void _disposeTail() {
         var LinkedList list, listParent;
         var Square square;
