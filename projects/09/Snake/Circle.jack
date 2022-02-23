@@ -3,10 +3,10 @@ class Circle {
     field int x, y; // Position
     field int radius;
 
-    constructor Circle new(int Ax, int Ay, int ARadius) {
-        let radius = ARadius;
-        let x = Ax * 2 * ARadius;
-        let y = Ay * 2 * ARadius;
+    constructor Circle new(int Ax, int Ay, int aRadius) {
+        let radius = aRadius;
+        let x = (Ax * 2 * aRadius) + aRadius;
+        let y = (Ay * 2 * aRadius) + aRadius;
         do draw();
         return this;
     }
@@ -28,10 +28,10 @@ class Circle {
     // ACCESSORS
     //
     method int getGridX() {
-        return x / (2 * radius);
+        return (x - radius) / (2 * radius);
     }
 
     method int getGridY() {
-        return y / (2 * radius);
+        return (y - radius) / (2 * radius);
     }
 }
