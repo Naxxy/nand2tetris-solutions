@@ -9,7 +9,7 @@ class Game {
         let snake = Snake.new(16);
         let food = Circle.new(2, 2, 16 / 2);
         let facing = 3; // Facing right
-        let snakeSpeed = 1000 / 3; // Move updates per second
+        let snakeSpeed = 1000 / 4; // Move updates per second
 
         do initialiseScore();
 
@@ -32,9 +32,11 @@ class Game {
     method void run() {
         var char key;  // the key currently pressed by the user
         var boolean exit;
-        var int keyTick, i;
+        var int keyTick, i, newDirection;
+
         let exit = false;
         let keyTick = 1000 / 60; // 60 updates per second
+        let newDirection = facing;
 
         while (~exit) {
 
@@ -44,17 +46,24 @@ class Game {
                 // Handle key press
                 let key = Keyboard.keyPressed();
                 if (key = 81)  { let exit = true; }     // q key
-                if (key = 130) { let facing = 1; }   // left arrow
-                if (key = 131) { let facing = 2; }   // up arrow
-                if (key = 132) { let facing = 3; }   // right arrow
-                if (key = 133) { let facing = 4; }   // down arrow
+                if (key = 130) { let newDirection = 1; }   // left arrow
+                if (key = 131) { let newDirection = 2; }   // up arrow
+                if (key = 132) { let newDirection = 3; }   // right arrow
+                if (key = 133) { let newDirection = 4; }   // down arrow
 
                 // Delay per loop
                 do Sys.wait(keyTick);
                 let i = i - 1;
             }
 
+            // Can't move back into body
+            if((newDirection = 3) & (facing = 1)) { let newDirection = facing; }
+            if((newDirection = 1) & (facing = 3)) { let newDirection = facing; }
+            if((newDirection = 2) & (facing = 4)) { let newDirection = facing; }
+            if((newDirection = 4) & (facing = 2)) { let newDirection = facing; }
+
             // Handle snake movement
+            let facing = newDirection;
             if(canMoveSnake()) {
                 do moveSnake();
             } else {
