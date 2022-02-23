@@ -1,3 +1,10 @@
+//
+// ##### TODO #####
+// - PRINT GAME OVER MESSAGE ON FAILED MOVEMENT
+// - WRITE METHOD FOR EATING FOOD
+// - HANDLE RANDOMISING THE FOOD POSITION
+//
+
 /** Implements the Snake game logic. */
 class Game {
     field int score, snakeSpeed, facing;
@@ -11,7 +18,7 @@ class Game {
         let spriteSize = ASpriteSize;
 
         let facing = 3; // Facing right
-        let snakeSpeed = 1000 / 4; // Move updates per second
+        let snakeSpeed = 1000 / 6; // Move updates per second
 
         let snake = Snake.new(spriteSize);
         let food = Circle.new(2, 2, spriteSize / 2);
@@ -78,20 +85,15 @@ class Game {
         } // while
         return;
     }
-
-    //
-    // ACCESSORS
-    //
-
     //
     // HELPERS
     //
     /** Moves the snake in the current direction. */
     method void moveSnake() {
-        if (facing = 1) { do snake.moveLeft(); }
-        if (facing = 2) { do snake.moveUp(); }
-        if (facing = 3) { do snake.moveRight(); }
-        if (facing = 4) { do snake.moveDown(); }
+        if (facing = 1) { do snake.moveLeft(false); }
+        if (facing = 2) { do snake.moveUp(false); }
+        if (facing = 3) { do snake.moveRight(false); }
+        if (facing = 4) { do snake.moveDown(false); }
         return;
     }
 

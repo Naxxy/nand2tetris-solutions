@@ -56,12 +56,13 @@ class Snake {
     //
     // --- MOVEMENT ---
     //
+    method void moveLeft(boolean extend) {
         var LinkedList list, listParent;
         var Square square;
         var int x, y;
 
         // Get rid of tail
-        do _disposeTail();
+        if(~extend) { do _disposeTail(); }
 
         // Get the (x, y) of the head
         let list = snakeHead;
@@ -77,13 +78,13 @@ class Snake {
         return;
     }
 
-    method void moveUp() {
+    method void moveUp(boolean extend) {
         var LinkedList list, listParent;
         var Square square;
         var int x, y;
 
         // Get rid of tail
-        do _disposeTail();
+        if(~extend) { do _disposeTail(); }
 
         // Get the (x, y) of the head
         let list = snakeHead;
@@ -99,13 +100,13 @@ class Snake {
         return;
     }
 
-    method void moveRight() {
+    method void moveRight(boolean extend) {
         var LinkedList list, listParent;
         var Square square;
         var int x, y;
 
         // Get rid of tail
-        do _disposeTail();
+        if(~extend) { do _disposeTail(); }
 
         // Get the (x, y) of the head
         let list = snakeHead;
@@ -121,13 +122,13 @@ class Snake {
         return;
     }
 
-    method void moveDown() {
+    method void moveDown(boolean extend) {
         var LinkedList list, listParent;
         var Square square;
         var int x, y;
 
         // Get rid of tail
-        do _disposeTail();
+        if(~extend) { do _disposeTail(); }
 
         // Get the (x, y) of the head
         let list = snakeHead;
