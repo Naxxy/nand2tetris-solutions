@@ -96,20 +96,23 @@ class Game {
     }
 
     method boolean canMoveSnake() {
-
-        // TODO: REFACTOR THIS TO CONTAIN XHEAD & YHEAD CODE
-        // TODO: REFACTOR SNAKE TO JUST CONTAIN XHEAD / YHEAD COLLISION CODE,
-        //    AND DO DIRECTION CHECKS HERE
-        // TODO: FIX RIGHT / BOTTOM DRAWING CRASH CASES
-        // TODO: PRINT GAME OVER MESSAGE ON FAILED MOVEMENT
-
         var boolean canMove;
+        var int xHead, yHead;
+
+        if (snake.willBodyCollide(facing)) {
+            return false;
+        }
+
+        // Check still within grid
+        let xHead = snake.getSnakeHeadX();
+        let yHead = snake.getSnakeHeadY();
         let canMove = false;
 
-        if (facing = 1) { let canMove = snake.canMoveLeft(); }
-        if (facing = 2) { let canMove = snake.canMoveUp(); }
-        if (facing = 3) { let canMove = snake.canMoveRight(); }
-        if (facing = 4) { let canMove = snake.canMoveDown(); }
+        if (facing = 1) { let canMove = (xHead > 0); }                  // LEFT
+        if (facing = 2) { let canMove = (yHead > 0); }                  // UP
+        if (facing = 3) { let canMove = (xHead < gridWidth); }          // RIGHT
+        if (facing = 4) { let canMove = (yHead < (gridHeight - 1)); }   // DOWN
+
         return canMove;
     }
 

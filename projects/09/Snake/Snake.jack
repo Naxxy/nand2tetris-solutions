@@ -39,9 +39,23 @@ class Snake {
     }
 
     //
-    // Move the snake
+    // --- ACCESSORS ---
     //
-    method void moveLeft() {
+    method int getSnakeHeadX() {
+        var Square square;
+        let square = snakeHead.square();
+        return square.getGridX();
+    }
+
+    method int getSnakeHeadY() {
+        var Square square;
+        let square = snakeHead.square();
+        return square.getGridY();
+    }
+
+    //
+    // --- MOVEMENT ---
+    //
         var LinkedList list, listParent;
         var Square square;
         var int x, y;
@@ -132,8 +146,8 @@ class Snake {
     //
     // COLLISION CHECKS
     //
-    method boolean canMoveLeft() {
-        var LinkedList list;
+
+    method boolean willBodyCollide(int direction) {
         var Square square;
         var int xHead, yHead;
 
@@ -141,82 +155,15 @@ class Snake {
         let square = snakeHead.square();
         let xHead = square.getGridX();
         let yHead = square.getGridY();
-        let xHead = xHead - 1; // For moving left
 
-        // Out of bounds
-        if((xHead * squareSize) < 0) {
-            do Output.println();
-            do Output.printString("GAME OVER: Collided with left wall!");
-            do Output.println();
-            return false;
-        }
+        if (direction = 1) { let xHead = xHead - 1; }  // For moving left
+        if (direction = 2) { let yHead = yHead - 1; }  // For moving up
+        if (direction = 3) { let xHead = xHead + 1; }  // For moving right
+        if (direction = 4) { let yHead = yHead + 1; }  // For moving down
 
-        return ~_bodyCollision(xHead, yHead);
+        return _bodyCollision(xHead, yHead);
     }
 
-    method boolean canMoveUp() {
-        var LinkedList list;
-        var Square square;
-        var int xHead, yHead;
-
-        // Get head (x, y) for boundary / collision check
-        let square = snakeHead.square();
-        let xHead = square.getGridX();
-        let yHead = square.getGridY();
-        let yHead = yHead - 1; // For moving up
-
-        if((yHead * squareSize) < 0) {
-            do Output.printString("GAME OVER: Collided with top wall!");
-            do Output.println();
-            return false;
-        }
-
-        return ~_bodyCollision(xHead, yHead);
-    }
-
-    method boolean canMoveRight() {
-        var LinkedList list;
-        var Square square;
-        var int xHead, yHead;
-
-        // Get head (x, y) for boundary / collision check
-        let square = snakeHead.square();
-        let xHead = square.getGridX();
-        let yHead = square.getGridY();
-        let xHead = xHead + 1; // For moving right
-
-        if((xHead * squareSize) > screenWidth) {
-            do Output.printString("GAME OVER: Collided with right wall!");
-            do Output.println();
-            return false;
-        }
-
-        return ~_bodyCollision(xHead, yHead);
-    }
-
-    method boolean canMoveDown() {
-        var LinkedList list;
-        var Square square;
-        var int xHead, yHead;
-
-        // Get head (x, y) for boundary / collision check
-        let square = snakeHead.square();
-        let xHead = square.getGridX();
-        let yHead = square.getGridY();
-        let yHead = yHead + 1; // For moving down
-
-        if((yHead * squareSize) > screenHeight) {
-            do Output.printString("GAME OVER: Collided with bottom wall!");
-            do Output.println();
-            return false;
-        }
-
-        return ~_bodyCollision(xHead, yHead);
-    }
-
-    //
-    // HELPERS
-    //
     method boolean _bodyCollision(int xHead, int yHead) {
         var int x, y;
         var LinkedList list;
@@ -245,6 +192,10 @@ class Snake {
         return false;
     }
 
+    //
+    // HELPERS
+    //
+
     method void _disposeTail() {
         var LinkedList list, listParent;
         var Square square;
@@ -268,7 +219,7 @@ class Snake {
         return;
     }
 
-    method void printSnakeHead() {
+    method void _printSnakeHead() {
         var Square square;
         var int x, y;
 
@@ -285,7 +236,7 @@ class Snake {
         return;
     }
 
-    method void printSnake() {
+    method void _printSnake() {
         var Square square;
         var int x, y, i;
         var LinkedList list;
