@@ -3,14 +3,23 @@ class Main {
     function void main() {
 
         //
-        // --- Variable declaration ---
+        // --- DECLARE VARIABLES ---
         //
         var Game game;
+        var Circle circle;
         var int sWidth, sHeight, thickness;
+        var int spriteSize, gridWidth, gridHeight;
 
+        //
+        // --- INITIALISE VARIABLES ---
+        //
         let thickness = 3;
         let sWidth = 512;
         let sHeight = 256;
+
+        let spriteSize = 16;
+        let gridWidth = sWidth / (spriteSize + 1);
+        let gridHeight = sHeight / (spriteSize + 1);
 
         //
         // --- DRAW BOUNDARY ---
@@ -20,13 +29,10 @@ class Main {
         do Screen.drawRectangle(0, sHeight - thickness, sWidth - 1, sHeight - 1); // Bottom
         do Screen.drawRectangle(sWidth - thickness, 0, sWidth - 1, sHeight - 1); // Right
 
-        // --- INITIALISE GAME ---
-        let game = Game.new();
+        // --- RUN GAME ---
+        let game = Game.new(gridWidth, gridHeight, spriteSize);
         do game.run();
 
-        // --- FINISH CONDITION ---
-        do Output.println();
-        do Output.printString("GAME OVER");
         return;
     }
 }

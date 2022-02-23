@@ -7,10 +7,10 @@ class Square {
     // Lifecycle
     //
     /** Constructs a new square with a given location and size. */
-    constructor Square new(int Ax, int Ay) {
-       let size = 16;
-       let x = Ax * size;
-       let y = Ay * size;
+    constructor Square new(int Ax, int Ay, int ASize) {
+       let size = ASize;
+       let x = (Ax * size) + (size / 2);
+       let y = (Ay * size) + (size / 2);
        do draw();
        return this;
     }
@@ -52,28 +52,20 @@ class Square {
     }
 
     method int getGridX() {
-        if(x = 0) {
-            return 0;
-        } else {
-            return x / size;
-        }
+        return (x - (size / 2)) / size;
     }
 
     method int getGridY() {
-        if(y = 0) {
-            return 0;
-        } else {
-            return y / size;
-        }
+        return (y - (size / 2)) / size;
     }
 
     method void setGridX(int Ax) {
-        let x = Ax * size;
+        let x = (Ax * size) + (size / 2);
         return;
     }
 
     method void setGridY(int Ay) {
-        let y = Ay * size;
+        let y = (Ay * size) + (size / 2);
         return;
     }
 }

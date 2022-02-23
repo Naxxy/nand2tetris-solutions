@@ -1,16 +1,22 @@
 /** Implements the Snake game logic. */
 class Game {
     field int score, snakeSpeed, facing;
+    field int gridWidth, gridHeight, spriteSize;
     field Snake snake;
     field Circle food;
 
-    constructor Game new() {
-        let score = 0;
-        let snake = Snake.new(16);
-        let food = Circle.new(2, 2, 16 / 2);
+    constructor Game new(int AGridWith, int AGridHeight, int ASpriteSize) {
+        let gridWidth = AGridWith;
+        let gridHeight = AGridHeight;
+        let spriteSize = ASpriteSize;
+
         let facing = 3; // Facing right
         let snakeSpeed = 1000 / 4; // Move updates per second
 
+        let snake = Snake.new(spriteSize);
+        let food = Circle.new(2, 2, spriteSize / 2);
+
+        let score = 0;
         do initialiseScore();
 
         return this;

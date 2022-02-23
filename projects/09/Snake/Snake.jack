@@ -17,14 +17,14 @@ class Snake {
         let squareSize = ASquareSize;
 
         // Build snake body
-        let square = Square.new(17, 14);
+        let square = Square.new(17, 14, squareSize);
         let snakeHead = LinkedList.new(square);
 
-        let square = Square.new(16, 14);
+        let square = Square.new(16, 14, squareSize);
         do snakeHead.setNext(LinkedList.new(square));
         let list = snakeHead.next();
 
-        let square = Square.new(15, 14);
+        let square = Square.new(15, 14, squareSize);
         do list.setNext(LinkedList.new(square));
 
         return this;
@@ -56,7 +56,7 @@ class Snake {
         let y = square.getGridY();
 
         // Add a new item to the head
-        let square = Square.new(x - 1, y);
+        let square = Square.new(x - 1, y, squareSize);
         let snakeHead = LinkedList.new(square);
         do snakeHead.setNext(list);
 
@@ -78,7 +78,7 @@ class Snake {
         let y = square.getGridY();
 
         // Add a new item to the head
-        let square = Square.new(x, y - 1);
+        let square = Square.new(x, y - 1, squareSize);
         let snakeHead = LinkedList.new(square);
         do snakeHead.setNext(list);
 
@@ -100,7 +100,7 @@ class Snake {
         let y = square.getGridY();
 
         // Add a new item to the head
-        let square = Square.new(x + 1, y);
+        let square = Square.new(x + 1, y, squareSize);
         let snakeHead = LinkedList.new(square);
         do snakeHead.setNext(list);
 
@@ -122,7 +122,7 @@ class Snake {
         let y = square.getGridY();
 
         // Add a new item to the head
-        let square = Square.new(x, y + 1);
+        let square = Square.new(x, y + 1, squareSize);
         let snakeHead = LinkedList.new(square);
         do snakeHead.setNext(list);
 

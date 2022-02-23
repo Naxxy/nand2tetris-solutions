@@ -5,8 +5,8 @@ class Circle {
 
     constructor Circle new(int Ax, int Ay, int aRadius) {
         let radius = aRadius;
-        let x = (Ax * 2 * aRadius) + aRadius;
-        let y = (Ay * 2 * aRadius) + aRadius;
+        let x = (Ax + 1) * 2 * aRadius;
+        let y = (Ay + 1) * 2 * aRadius;
         do draw();
         return this;
     }
@@ -28,10 +28,10 @@ class Circle {
     // ACCESSORS
     //
     method int getGridX() {
-        return (x - radius) / (2 * radius);
+        return (x / (2 * radius)) - 1;
     }
 
     method int getGridY() {
-        return (y - radius) / (2 * radius);
+        return (y / (2 * radius)) - 1;
     }
 }
