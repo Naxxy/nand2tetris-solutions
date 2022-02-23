@@ -6,6 +6,19 @@ class Main {
         // --- Variable declaration ---
         //
         var Game game;
+        var int sWidth, sHeight, thickness;
+
+        let thickness = 3;
+        let sWidth = 512;
+        let sHeight = 256;
+
+        //
+        // --- DRAW BOUNDARY ---
+        //
+        do Screen.drawRectangle(0, 0, sWidth - 1, thickness); // Top
+        do Screen.drawRectangle(0, 0, thickness, sHeight - 1); // Left
+        do Screen.drawRectangle(0, sHeight - thickness, sWidth - 1, sHeight - 1); // Bottom
+        do Screen.drawRectangle(sWidth - thickness, 0, sWidth - 1, sHeight - 1); // Right
 
         // --- INITIALISE GAME ---
         let game = Game.new();
@@ -16,5 +29,4 @@ class Main {
         do Output.printString("GAME OVER");
         return;
     }
-
 }
