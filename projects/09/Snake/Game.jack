@@ -1,10 +1,3 @@
-//
-// ##### TODO #####
-// - PRINT GAME OVER MESSAGE ON FAILED MOVEMENT
-// - WRITE METHOD FOR EATING FOOD
-// - HANDLE RANDOMISING THE FOOD POSITION
-//
-
 /** Implements the Snake game logic. */
 class Game {
     field int score, snakeSpeed, facing;
@@ -88,9 +81,12 @@ class Game {
 
     method void generateFood() {
         var int x, y, xBody, yBody;
-        var int offset;
+        var int offset, xOffset, yOffset;
 
         let offset = 7 * facing * snake.getSnakeSize(); // Somewhat random offset
+        let xOffset = 13;
+        let yOffset = 5;
+
         while (offset > gridWidth) {
             let offset = offset / 3 * 2;
         }
@@ -101,15 +97,16 @@ class Game {
         }
         let y = offset;
 
-        do Output.printString("Offset is: ");
-        do Output.printInt(offset);
-        do Output.printString(", new position is: (");
-        do Output.printInt(x);
-        do Output.printString(", ");
-        do Output.printInt(y);
-        do Output.printString(")");
-
         // Loop to find next free spot
+        while(snake.checkBodyCollision(x, y)) {
+            let x = x + xOffset;
+            let y = y + yOffset;
+            if(~(x < gridWidth)) { let x = x - gridWidth; }
+            if(~(y < (gridHeight - 1))) { let y = y - gridHeight; }
+        }
+
+        // Found a free spot
+        let food = Circle.new(x, y, spriteSize / 2);
 
         return;
     }
@@ -147,6 +144,7 @@ class Game {
         if(willScore) {
             do food.dispose();
             let score = score + 1;
+            do printScore();
             do generateFood();
         }
 

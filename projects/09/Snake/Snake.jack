@@ -166,10 +166,10 @@ class Snake {
         if (direction = 3) { let xHead = xHead + 1; }  // For moving right
         if (direction = 4) { let yHead = yHead + 1; }  // For moving down
 
-        return _bodyCollision(xHead, yHead);
+        return checkBodyCollision(xHead, yHead);
     }
 
-    method boolean _bodyCollision(int xHead, int yHead) {
+    method boolean checkBodyCollision(int xCheck, int yCheck) {
         var int x, y;
         var LinkedList list;
         var Square square;
@@ -182,13 +182,7 @@ class Snake {
             let y = square.getGridY();
 
             // Check body collision
-            if((x = xHead) & (y = yHead)) {
-                do Output.printString("Collided with body at: (");
-                do Output.printInt(x);
-                do Output.printString(", ");
-                do Output.printInt(y);
-                do Output.printString(")!");
-                do Output.println();
+            if((x = xCheck) & (y = yCheck)) {
                 return true;
             }
 
