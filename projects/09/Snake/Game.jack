@@ -21,10 +21,10 @@ class Game {
         let snakeSpeed = 1000 / 6; // Move updates per second
 
         let snake = Snake.new(spriteSize);
-        let food = Circle.new(2, 2, spriteSize / 2);
+        let food = Circle.new(14, 4, spriteSize / 2);
 
         let score = 0;
-        do initialiseScore();
+        do printScore();
 
         return this;
     }
@@ -85,16 +85,94 @@ class Game {
         } // while
         return;
     }
+
+    method void generateFood() {
+        var int x, y, xBody, yBody;
+        var int offset;
+
+        let offset = 7 * facing * snake.getSnakeSize(); // Somewhat random offset
+        while (offset > gridWidth) {
+            let offset = offset / 3 * 2;
+        }
+        let x = offset;
+
+        while (offset > gridHeight) {
+            let offset = offset / 2;
+        }
+        let y = offset;
+
+        do Output.printString("Offset is: ");
+        do Output.printInt(offset);
+        do Output.printString(", new position is: (");
+        do Output.printInt(x);
+        do Output.printString(", ");
+        do Output.printInt(y);
+        do Output.printString(")");
+
+        // Loop to find next free spot
+
+        return;
+    }
+
+    method void printScore() {
+        do Output.moveCursor(0, 0);
+        do Output.printString("SCORE: ");
+        do Output.printInt(score);
+
+        return;
+    }
+
     //
-    // HELPERS
+    // --- SNAKE LOGIC ---
     //
     /** Moves the snake in the current direction. */
     method void moveSnake() {
-        if (facing = 1) { do snake.moveLeft(false); }
-        if (facing = 2) { do snake.moveUp(false); }
-        if (facing = 3) { do snake.moveRight(false); }
-        if (facing = 4) { do snake.moveDown(false); }
+        var boolean willScore;
+
+        let willScore = willScoreOnMove();
+
+        if (facing = 1) {
+            do snake.moveLeft(willScore);
+        }
+        if (facing = 2) {
+            do snake.moveUp(willScore);
+        }
+        if (facing = 3) {
+            do snake.moveRight(willScore);
+        }
+        if (facing = 4) {
+            do snake.moveDown(willScore);
+        }
+
+        if(willScore) {
+            do food.dispose();
+            let score = score + 1;
+            do generateFood();
+        }
+
         return;
+    }
+
+    method boolean willScoreOnMove() {
+        var boolean willScore;
+        var int xHead, yHead, xFood, yFood;
+
+        let willScore = false;
+        let xHead = snake.getSnakeHeadX();
+        let yHead = snake.getSnakeHeadY();
+        let xFood = food.getGridX();
+        let yFood = food.getGridY();
+
+        if (facing = 1) { let xHead = xHead - 1; } // Move left
+        if (facing = 2) { let yHead = yHead - 1; } // Move up
+        if (facing = 3) { let xHead = xHead + 1; } // Move right
+        if (facing = 4) { let yHead = yHead + 1; } // Move down
+
+        if((xFood = xHead) & (yFood = yHead)) {
+            let willScore = true;
+        }
+
+        return willScore;
     }
 
     method boolean canMoveSnake() {
@@ -116,28 +194,5 @@ class Game {
         if (facing = 4) { let canMove = (yHead < (gridHeight - 1)); }   // DOWN
 
         return canMove;
-    }
-
-    method void initialiseScore() {
-        do Output.printString("SCORE: 0");
-        return;
-    }
-
-    method void updateScore(int value) {
-        var int i;
-
-        let i = score;
-        if(i = 0) {
-            do Output.backSpace(); // Special case
-        }
-        while(i > 0) {
-            do Output.backSpace();
-            let i = i / 10;
-        }
-
-        let score = score + value;
-        do Output.printInt(score);
-
-        return;
     }
 }

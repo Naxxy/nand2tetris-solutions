@@ -53,6 +53,10 @@ class Snake {
         return square.getGridY();
     }
 
+    method int getSnakeSize() {
+        return snakeSize;
+    }
+
     //
     // --- MOVEMENT ---
     //
