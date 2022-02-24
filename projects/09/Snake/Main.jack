@@ -8,7 +8,10 @@ class Main {
         var Game game;
         var Circle circle;
         var int sWidth, sHeight, thickness;
+        var int cursorWidth, cursorHeight, cr, cc;
         var int spriteSize, gridWidth, gridHeight;
+        var int key;
+        var boolean exit, restart;
 
         //
         // --- INITIALISE VARIABLES ---
@@ -16,22 +19,64 @@ class Main {
         let thickness = 3;
         let sWidth = 512;
         let sHeight = 256;
+        let cursorWidth = 64;
+        let cursorHeight = 23;
 
         let spriteSize = 16;
         let gridWidth = sWidth / (spriteSize + 1);
         let gridHeight = sHeight / (spriteSize + 1);
+        let exit = false;
+        let restart = false;
 
-        //
-        // --- DRAW BOUNDARY ---
-        //
-        do Screen.drawRectangle(0, 0, sWidth - 1, thickness); // Top
-        do Screen.drawRectangle(0, 0, thickness, sHeight - 1); // Left
-        do Screen.drawRectangle(0, sHeight - thickness, sWidth - 1, sHeight - 1); // Bottom
-        do Screen.drawRectangle(sWidth - thickness, 0, sWidth - 1, sHeight - 1); // Right
+        while(~exit) {
+            // Clear screen
+            let restart = false;
+            do Screen.setColor(false);
+            do Screen.drawRectangle(0, 0, sWidth - 1, sHeight - 1);
 
-        // --- RUN GAME ---
-        let game = Game.new(gridWidth, gridHeight, spriteSize);
-        do game.run();
+            //
+            // --- DRAW BOUNDARY ---
+            //
+            do Screen.setColor(true);
+            do Screen.drawRectangle(0, 0, sWidth - 1, thickness); // Top
+            do Screen.drawRectangle(0, 0, thickness, sHeight - 1); // Left
+            do Screen.drawRectangle(0, sHeight - thickness, sWidth - 1, sHeight - 1); // Bottom
+            do Screen.drawRectangle(sWidth - thickness, 0, sWidth - 1, sHeight - 1); // Right
+
+            // --- RUN GAME ---
+            let game = Game.new(gridWidth, gridHeight, spriteSize);
+            do game.run();
+
+            // --- GAME OVER ---
+            let cr = (cursorHeight / 2) - 1;
+            let cc = (cursorWidth / 2) - 5;
+            do Output.moveCursor(cr, cc);
+            do Output.printString("GAME OVER");
+
+            let cr = (cursorHeight / 2) + 1;
+            let cc = (cursorWidth / 2) - 16;
+            do Output.moveCursor(cr, cc);
+            do Output.printString("Press Q to quit, R to restart");
+
+            let key = 0;
+            while((~restart) & (~exit)) {
+                // Handle key press
+                let key = Keyboard.keyPressed();
+                if (key = 81)  { let exit = true; }         // q key
+                if (key = 82)  { let restart = true; }      // r key
+            }
+        }
+
+        return;
+    }
+
+    function void printValues(int x, int y) {
+        do Output.printString(" > ");
+        do Output.printString("(");
+        do Output.printInt(x);
+        do Output.printString(", ");
+        do Output.printInt(y);
+        do Output.printString(")");
 
         return;
     }
