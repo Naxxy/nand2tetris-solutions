@@ -79,7 +79,7 @@ class JackTokenizer:
 
     # TODO
     def advance(self):
-    pass
+        pass
 
     # TODO
     def tokenType(self) -> TokenType:
@@ -105,5 +105,57 @@ class JackTokenizer:
     def stringVal(self) -> str:
         return "TODO - STRING VAL"
 
+    def _tokensForLine(self, line):
+        chunks = line.split()
+
+        # Strip comments
+        # TODO - Need a better approach?
+        start_index = None
+        end_index = None
+        for index, chunk in enumerate(chunks):
+            if chunk.startswith("//") or chunk.startswith("/**"):
+                start_index = index
+            elif chunk.endswith("*/"):
+                end_index = index + 1
+        if start_index != None:
+            sublist = chunks[start_index:end_index] if end_index else chunks[start_index:]
+            chunks = [x for x in chunks if x not in sublist]
+
+        return chunks
+
 if __name__ == "__main__":
+    demo = """// This file is part of www.nand2tetris.org
+    // and the book "The Elements of Computing Systems"
+    // by Nisan and Schocken, MIT Press.
+    // File name: projects/10/ExpressionLessSquare/Main.jack
+
+    /** Expressionless version of projects/10/Square/Main.jack. */
+
+    class Main {
+        static boolean test;    // Added for testing -- there is no static keyword
+                                // in the Square files.
+
+        function void main() {
+            var SquareGame game;
+            let game = game;
+            do game.run();
+            do game.dispose();
+            return;
+        }
+
+        function void more() {  // Added to test Jack syntax that is not used in
+            var boolean b;      // the Square files.
+            if (b) {
+            }
+            else {              // There is no else keyword in the Square files.
+            }
+            return;
+        }
+    }
+    """.split('\n')
+
     print("Inside JackTokenizer")
+    print()
+    tokenizer = JackTokenizer("", True)
+    for line in demo:
+        print(tokenizer._tokensForLine(line))
