@@ -3,6 +3,7 @@ import sys
 import os
 from pathlib import Path
 from dataclasses import dataclass
+from JackTokenizer import JackTokenizer, TokenType, Keyword
 from pprint import pprint
 
 # TODO: FIX HANDLING OF OUTPUT PATH WHEN COMMAND LINE ARG HAS OUTPUT PATH (WITH EXT)
@@ -24,6 +25,9 @@ class FileData:
         output_path = os.path.join(self.output_dir, self.filename)
         return os.path.splitext(output_path)[0] + "_out" + self.output_ext
 
+    def token_output_path(self) -> str:
+        output_path = os.path.join(self.output_dir, self.filename)
+        return os.path.splitext(output_path)[0] + "T" + self.output_ext
 
 class JackAnalyser:
     file_data = []
@@ -40,6 +44,7 @@ class JackAnalyser:
         else:
             output_dir = output_path
 
+
         # Set filedata for a directory
         self.file_data = []
         if os.path.isdir(input_path):
@@ -53,9 +58,41 @@ class JackAnalyser:
             filename = os.path.splitext(os.path.split(input_path)[-1])[0]
             self.file_data = [FileData(filename, input_dir, self.input_ext, output_dir, self.output_ext)]
 
+    # TODO
     def analyse(self):
-        # TODO
         for file_data in self.file_data:
+            tokenizer = JackTokenizer(file_data.input_path())
+            with open(file_data.token_output_path(), 'w') as fp:
+                fp.write("<tokens>\n")
+                while(tokenizer.hasMoreTokens()):
+
+                    # Get token type & value
+                    type = tokenizer.tokenType()
+                    value = None
+                    if type == TokenType.KEYWORD:
+                        value = tokenizer.keyWord()
+                    elif type == TokenType.SYMBOL:
+                        value = tokenizer.symbol()
+                    elif type == TokenType.IDENTIFIER:
+                        value = tokenizer.identifier()
+                    elif type == TokenType.INT_CONST:
+                        value = tokenizer.intVal()
+                    elif type == TokenType.STRING_CONST:
+                        value = tokenizer.stringVal()
+                    else:
+                        print("UNIMPLEMENTED: {}".format(type))
+                        break
+
+                    # Write token to file
+                    fp.write("\t" + type.tagWithValue(value) + "\n")
+
+                    # Advance loop
+                    tokenizer.advance()
+
+                # End of tokenizing
+                fp.write("</tokens>")
+
+
             print("> File data: \'{0}\', \'{1}\', \'{2}\'".format(
                 file_data.filename, file_data.input_path(), file_data.output_path()))
 
