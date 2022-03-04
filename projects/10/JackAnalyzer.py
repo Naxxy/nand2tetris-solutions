@@ -65,8 +65,8 @@ class JackAnalyser:
             with open(file_data.token_output_path(), 'w') as fp:
                 fp.write("<tokens>\n")
                 while(tokenizer.hasMoreTokens()):
+                    tokenizer.advance()
 
-                    # Get token type & value
                     type = tokenizer.tokenType()
                     value = None
                     if type == TokenType.KEYWORD:
@@ -85,9 +85,6 @@ class JackAnalyser:
 
                     # Write token to file
                     fp.write("\t" + type.tagWithValue(value) + "\n")
-
-                    # Advance loop
-                    tokenizer.advance()
 
                 # End of tokenizing
                 fp.write("</tokens>")

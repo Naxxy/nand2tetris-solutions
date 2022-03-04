@@ -1,7 +1,10 @@
-#!/usr/bin/env python
-from enum import Enum
+#!/usr/bin/env python3
+from enum import Enum, IntEnum
+from itertools import chain
+from xml.sax import saxutils
+import re
 
-class TokenType(Enum):
+class TokenType(IntEnum):
     KEYWORD = 0,
     SYMBOL = 1,
     IDENTIFIER = 2,
@@ -9,15 +12,22 @@ class TokenType(Enum):
     STRING_CONST = 4
 
     def tagWithValue(self, value) -> str:
-        if self == TokenType.KEYWORD: tag = "keyword"
-        elif self == TokenType.SYMBOL: tag = "symbol"
-        elif self == TokenType.IDENTIFIER: tag = "identifier"
-        elif self == TokenType.INT_CONST: tag = "integerConstant"
-        elif self == TokenType.STRING_CONST: tag = "stringConstant"
+        if self == TokenType.KEYWORD:
+            tag = "keyword"
+            value = value.stringValue()
+        elif self == TokenType.SYMBOL:
+            tag = "symbol"
+            value = saxutils.escape(value)
+        elif self == TokenType.IDENTIFIER:
+            tag = "identifier"
+        elif self == TokenType.INT_CONST:
+            tag = "integerConstant"
+        elif self == TokenType.STRING_CONST:
+            tag = "stringConstant"
 
         return "<{0}>{1}</{0}>".format(tag, value)
 
-class Keyword(Enum):
+class Keyword(IntEnum):
     CLASS = 0,
     METHOD = 1,
     FUNCTION = 2,
@@ -40,88 +50,165 @@ class Keyword(Enum):
     NULL = 19,
     THIS = 20
 
+    def stringValue(self):
+        for (key, value) in Keyword.keywordMap().items():
+            if value == self:
+                return key
+
+    def keywordMap():
+        return {
+            'class': 0,
+            'method': 1,
+            'function': 2,
+            'constructor': 3,
+            'int': 4,
+            'boolean': 5,
+            'char': 6,
+            'void': 7,
+            'var': 8,
+            'static': 9,
+            'field': 10,
+            'let': 11,
+            'do': 12,
+            'if': 13,
+            'else': 14,
+            'while': 15,
+            'return': 16,
+            'true': 17,
+            'false': 18,
+            'null': 19,
+            'this': 20
+        }
+
+    def keywordList():
+        return list(Keyword.keywordMap().keys())
+
 class JackTokenizer:
     fp = None
-    line = None
-    token = None
-    keywordList = [
-        'class', 'constructor', 'function', 'method', 'field', 'static',
-        'var', 'int', 'char', 'boolean', 'void', 'true', 'false',
-        'null', 'this', 'let', 'do', 'if', 'else', 'while', 'return'
-    ]
-    symbolList = [
-        '{', '}', '(', ')', '[', ']', '.', ',', ';',
-        '+', '-', '*', '/', '&', '|', '<', '>', '=', '~'
+    tokens = None
+    token_index = 0
+
+    commentsRegex = re.compile(r".*(\/\/.*)|.*(\/\*\*.*\*\/)") # Assumes comments are one line only
+    keywordRegex = re.compile('|'.join(['({})'.format(x) for x in Keyword.keywordList()]))
+    symbolRegex = re.compile(r"^(\{|\}|\(|\)|\[|\]|\.|,|;|\+|-|\*|\/|&|\||<|>|=|~)")
+    identifierRegex = re.compile(r"^([a-zA-Z][a-zA-Z0-9_]*)")
+    stringValueRegex = re.compile(r"^\"(.*)\"")
+    integerValueRegex = re.compile(r"^([0-9]+)")
+    regexList = [
+        keywordRegex,
+        symbolRegex,
+        identifierRegex,
+        stringValueRegex,
+        integerValueRegex
     ]
 
     def __init__(self, filepath, debug=False):
         if not debug:
             self.fp = open(filepath, 'r')
-        self.line = None
-        self.token = None
+        self.tokens = None
+        self.token_index = 0
 
-    # TODO
+    # DONE
     def hasMoreTokens(self) -> bool:
-        # cursor_position = self.fp.tell()
-        #
-        # # Beginning of file
-        # if(self.token == None or self.line == None):
-        #     self.line = self.fp.readline()
-        #     self.token = self.line.split()[0]
-        #
-        # # Skip comments
-        #
-        #
-        #
-        #
-        # print("Line is: \"{}\"".format(self.line.strip()))
-        return False #self.line != ""
+        if not self.tokens or self.token_index < (len(self.tokens) - 1):
+            return True
 
-    # TODO
+        # Need to check more lines
+        tokens = []
+        cursor_position = self.fp.tell()
+        while not tokens:
+            next_line = self.fp.readline()
+            if next_line == "":
+                return False
+            tokens = self._tokensForLine(next_line)
+
+        self.fp.seek(cursor_position)
+        return True
+
+    # DONE
     def advance(self):
-        pass
+        if not self.tokens:
+            self.token_index = 0
+            while not self.tokens:
+                next_line = self.fp.readline()
+                self.tokens = self._tokensForLine(next_line)
+        elif self.token_index < (len(self.tokens) - 1):
+            self.token_index += 1
+        else:
+            # Need to fetch next line
+            self.tokens = []
+            self.token_index = 0
+            while not self.tokens:
+                next_line = self.fp.readline()
+                self.tokens = self._tokensForLine(next_line)
 
-    # TODO
+    # DONE
     def tokenType(self) -> TokenType:
-        return TokenType.KEYWORD
+        token = self.tokens[self.token_index]
 
-    # TODO
+        if self.keywordRegex.match(token):
+            return TokenType.KEYWORD
+        elif self.symbolRegex.match(token):
+            return TokenType.SYMBOL
+        elif self.identifierRegex.match(token):
+            return TokenType.IDENTIFIER
+        elif self.integerValueRegex.match(token):
+            return TokenType.INT_CONST
+        elif self.stringValueRegex.match(token):
+            return TokenType.STRING_CONST
+
+        raise Exception("TokenType is unknown for token \"{}\"".format(token))
+
+    # DONE
     def keyWord(self) -> Keyword:
-        return Keyword.NULL
+        map = Keyword.keywordMap()
+        token = self.tokens[self.token_index]
 
-    # TODO
+        return Keyword(map[token])
+
+    # DONE
     def symbol(self) -> chr:
-        return "?"
+        return str(self.tokens[self.token_index])
 
-    # TODO
+    # DONE
     def identifier(self) -> str:
-        return "TODO - IDENTIFIER"
+        return str(self.tokens[self.token_index])
 
-    # TODO
+    # DONE
     def intVal(self) -> int:
-        return -1
+        return int(self.tokens[self.token_index])
 
-    # TODO
+    # DONE
     def stringVal(self) -> str:
-        return "TODO - STRING VAL"
+        return str(self.tokens[self.token_index])
 
+    # DONE
     def _tokensForLine(self, line):
-        chunks = line.split()
-
         # Strip comments
-        # TODO - Need a better approach?
-        start_index = None
-        end_index = None
-        for index, chunk in enumerate(chunks):
-            if chunk.startswith("//") or chunk.startswith("/**"):
-                start_index = index
-            elif chunk.endswith("*/"):
-                end_index = index + 1
-        if start_index != None:
-            sublist = chunks[start_index:end_index] if end_index else chunks[start_index:]
-            chunks = [x for x in chunks if x not in sublist]
+        matches = self.commentsRegex.match(line)
+        if matches:
+            comment = matches.group(0)
+            line = self.commentsRegex.sub('', comment)
 
-        return chunks
+        original_line = line
+        tokens = []
+        while len(line):
+            line = line.lstrip()
+
+            token = None
+            for regex in self.regexList:
+                matches = regex.match(line)
+                if matches:
+                    token = matches.group(0)
+                    line = regex.sub('', line)
+                    tokens.append(token)
+                    break
+
+            if not token:
+                line = line[1:]
+
+        return tokens
+
 
 if __name__ == "__main__":
     demo = """// This file is part of www.nand2tetris.org
@@ -156,6 +243,22 @@ if __name__ == "__main__":
 
     print("Inside JackTokenizer")
     print()
-    tokenizer = JackTokenizer("", True)
-    for line in demo:
-        print(tokenizer._tokensForLine(line))
+    tokenizer = JackTokenizer("ArrayTest/Main.jack", False)
+
+    while(tokenizer.hasMoreTokens()):
+        tokenizer.advance()
+        type = tokenizer.tokenType()
+        if type == TokenType.KEYWORD:
+            value = tokenizer.keyWord()
+        elif type == TokenType.SYMBOL:
+            value = tokenizer.symbol()
+        elif type == TokenType.IDENTIFIER:
+            value = tokenizer.identifier()
+        elif type == TokenType.INT_CONST:
+            value = tokenizer.intVal()
+        elif type == TokenType.STRING_CONST:
+            value = tokenizer.stringVal()
+        else:
+            value = None
+
+        print(type.tagWithValue(value))
