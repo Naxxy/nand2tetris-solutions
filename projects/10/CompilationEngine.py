@@ -66,14 +66,63 @@ class CompilationEngine:
         """
         pass
 
-    def compileSubroutine(self):
-        pass
+    # DONE
+    def compileSubroutine(self, parent):
+        print("COMPILE SUBROUTINE")
+        parent.append(Comment('COMPILE SUBROUTINE'))
+        node = SubElement(parent, 'subroutineDec')
 
-    def compileParameterList(self):
-        pass
+        self._addKeyword(node, True)                # (constructor | function | method)
+        type = self.tokenizer.tokenType()           # type = (int | char | boolean | className)
+        if type == TokenType.IDENTIFIER:
+            self._addIdentifier(node, True)         # className
+        else:
+            self._addKeyword(node, True)            # (void | int | char | boolean | className)
 
-    def compileSubroutineBody(self):
-        pass
+        self._addIdentifier(node, True)             # subroutineName
+        self._addSymbol(node, True)                 # (
+        self.compileParameterList(node)             # parameterList
+        self._addSymbol(node, True)                 # )
+        self.compileSubroutineBody(node)            # subroutineBody
+
+        return node
+
+    # DONE?
+    def compileParameterList(self, parent):
+        print("COMPILE PARAMETER LIST")
+        parent.append(Comment('COMPILE PARAMETER LIST'))
+        node = SubElement(parent, 'parameterList')
+
+        value = self._tokenizerValue()
+        while value != ')':
+            print(f'VALUE: {self.tokenizer.symbol()}, TOKENS: {self.tokenizer.tokens}')
+            # Check the type
+            type = self.tokenizer.tokenType()
+
+            # Process the type
+            if type == TokenType.KEYWORD:               # (int | char | boolean)
+                self._addKeyword(node, True)
+            elif type == TokenType.IDENTIFIER:          # (className | varName)
+                self._addIdentifier(node, True)
+            elif type == TokenType.SYMBOL:              # ','
+                assert self.tokenizer.symbol() == ','
+                self._addSymbol(node, True)
+            else:
+                raise Exception("Invalid token type: {}".format(type))
+
+            # Advance
+            type = self.tokenizer.tokenType()
+            value = self._tokenizerValue()
+
+        return node
+
+    # TODO
+    def compileSubroutineBody(self, parent):
+        print("COMPILE SUBROUTINE BODY")
+        parent.append(Comment('COMPILE SUBROUTINE BODY'))
+        node = SubElement(parent, 'subroutineBody')
+
+        return node
 
     def compileVarDec(self):
         """
