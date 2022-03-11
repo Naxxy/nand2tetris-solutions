@@ -215,6 +215,8 @@ class JackTokenizer:
         if matches:
             comment = matches.group(0)
             line = self.commentsRegex.sub('', comment)
+        if line.strip() == '' or line.strip() == '\n':
+            return []
 
         original_line = line
         tokens = []
@@ -226,7 +228,7 @@ class JackTokenizer:
                 matches = regex.match(line)
                 if matches:
                     token = matches.group(0)
-                    line = regex.sub('', line)
+                    line = regex.sub('', line, 1)
                     tokens.append(token)
                     break
 
@@ -237,38 +239,6 @@ class JackTokenizer:
 
 
 if __name__ == "__main__":
-    demo = """// This file is part of www.nand2tetris.org
-    // and the book "The Elements of Computing Systems"
-    // by Nisan and Schocken, MIT Press.
-    // File name: projects/10/ExpressionLessSquare/Main.jack
-
-    /** Expressionless version of projects/10/Square/Main.jack. */
-
-    class Main {
-        static boolean test;    // Added for testing -- there is no static keyword
-                                // in the Square files.
-
-        function void main() {
-            var SquareGame game;
-            let game = game;
-            do game.run();
-            do game.dispose();
-            return;
-        }
-
-        function void more() {  // Added to test Jack syntax that is not used in
-            var boolean b;      // the Square files.
-            if (b) {
-            }
-            else {              // There is no else keyword in the Square files.
-            }
-            return;
-        }
-    }
-    """.split('\n')
-
-    print("Inside JackTokenizer")
-    print()
     tokenizer = JackTokenizer("ArrayTest/Main.jack", False)
 
     while(tokenizer.hasMoreTokens()):
@@ -287,4 +257,4 @@ if __name__ == "__main__":
             value = None
         tokenizer.advance()
 
-        print(type.tagWithValue(value))
+        print('{:40} - {:10}, {}'.format(type.tagWithValue(value), str(tokenizer.tokens), tokenizer.token_index))
