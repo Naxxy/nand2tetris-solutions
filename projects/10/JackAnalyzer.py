@@ -44,9 +44,10 @@ class JackAnalyser:
         for file_data in self.file_data:
             print(file_data.input_path())
             compiler = CompilationEngine(file_data)
+            # self._processTokensInFile(file_data)
 
 
-    def _processTokensInFile(filename: str):
+    def _processTokensInFile(self, file_data: str):
         tokenizer = JackTokenizer(file_data.input_path())
         with open(file_data.token_output_path(), 'w') as fp:
             fp.write("<tokens>\n")
@@ -69,6 +70,7 @@ class JackAnalyser:
                     break
 
                 # Write token to file
+                print('{:40} - {:10}, {}'.format(type.tagWithValue(value), str(tokenizer.tokens), tokenizer.token_index))
                 fp.write("\t" + type.tagWithValue(value) + "\n")
                 tokenizer.advance()
 
