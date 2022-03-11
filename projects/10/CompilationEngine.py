@@ -29,6 +29,7 @@ class CompilationEngine:
         self.fp_in.close()
         return
 
+    # DONE
     def compileClass(self):
         """
         <class>
@@ -127,31 +128,54 @@ class CompilationEngine:
         reparsed = minidom.parseString(rough_string)
         return reparsed.toprettyxml(indent="  ")
 
-    def _addKeyword(self, parent: Element):
+    def _tokenizerValue(self, raw = True):
+        type = self.tokenizer.tokenType()
+        if type == TokenType.KEYWORD:
+            value = self.tokenizer.keyWord() if raw else self.tokenizer.keyWord().stringValue()
+        elif type == TokenType.SYMBOL:
+            value = self.tokenizer.symbol() if raw else saxutils.escape(self.tokenizer.symbol())
+        elif type == TokenType.IDENTIFIER:
+            value = self.tokenizer.identifier()
+        elif type == TokenType.INT_CONST:
+            value = self.tokenizer.intVal()
+        elif type == TokenType.STRING_CONST:
+            value = self.tokenizer.stringVal()
+        else:
+            value = None
+
+        return value
+
+    def _addKeyword(self, parent: Element, advance = False):
         keyword = self.tokenizer.keyWord()
         type = self.tokenizer.tokenType()
 
+        if advance:
         self.tokenizer.advance()
+
         child = SubElement(parent, type.tag())
         child.text = " " + keyword.stringValue() + " "
 
         return child
 
-    def _addIdentifier(self, parent: Element):
+    def _addIdentifier(self, parent: Element, advance = False):
         identifier = self.tokenizer.identifier()
         type = self.tokenizer.tokenType()
 
+        if advance:
         self.tokenizer.advance()
+
         child = SubElement(parent, type.tag())
         child.text = " " + identifier + " "
 
         return child
 
-    def _addSymbol(self, parent: Element):
+    def _addSymbol(self, parent: Element, advance = False):
         symbol = self.tokenizer.symbol()
         type = self.tokenizer.tokenType()
 
+        if advance:
         self.tokenizer.advance()
+
         child = SubElement(parent, type.tag())
         child.text = " " + saxutils.escape(symbol) + " "
 
