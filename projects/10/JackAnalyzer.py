@@ -3,6 +3,7 @@ import sys
 import os
 from pathlib import Path
 from JackTokenizer import JackTokenizer, TokenType, Keyword
+from CompilationEngine import CompilationEngine
 from pprint import pprint
 from FileData import FileData
 
@@ -41,37 +42,41 @@ class JackAnalyser:
     # TODO
     def analyse(self):
         for file_data in self.file_data:
-            tokenizer = JackTokenizer(file_data.input_path())
-            with open(file_data.token_output_path(), 'w') as fp:
-                fp.write("<tokens>\n")
-                while(tokenizer.hasMoreTokens()):
-                    tokenizer.advance()
-
-                    type = tokenizer.tokenType()
-                    value = None
-                    if type == TokenType.KEYWORD:
-                        value = tokenizer.keyWord()
-                    elif type == TokenType.SYMBOL:
-                        value = tokenizer.symbol()
-                    elif type == TokenType.IDENTIFIER:
-                        value = tokenizer.identifier()
-                    elif type == TokenType.INT_CONST:
-                        value = tokenizer.intVal()
-                    elif type == TokenType.STRING_CONST:
-                        value = tokenizer.stringVal()
-                    else:
-                        print("UNIMPLEMENTED: {}".format(type))
-                        break
-
-                    # Write token to file
-                    fp.write("\t" + type.tagWithValue(value) + "\n")
-
-                # End of tokenizing
-                fp.write("</tokens>")
+            print(file_data.input_path())
 
 
-            print("> File data: \'{0}\', \'{1}\', \'{2}\'".format(
-                file_data.filename, file_data.input_path(), file_data.output_path()))
+    def _processTokensInFile(filename: str):
+        tokenizer = JackTokenizer(file_data.input_path())
+        with open(file_data.token_output_path(), 'w') as fp:
+            fp.write("<tokens>\n")
+            while(tokenizer.hasMoreTokens()):
+
+                type = tokenizer.tokenType()
+                value = None
+                if type == TokenType.KEYWORD:
+                    value = tokenizer.keyWord()
+                elif type == TokenType.SYMBOL:
+                    value = tokenizer.symbol()
+                elif type == TokenType.IDENTIFIER:
+                    value = tokenizer.identifier()
+                elif type == TokenType.INT_CONST:
+                    value = tokenizer.intVal()
+                elif type == TokenType.STRING_CONST:
+                    value = tokenizer.stringVal()
+                else:
+                    print("UNIMPLEMENTED: {}".format(type))
+                    break
+
+                # Write token to file
+                fp.write("\t" + type.tagWithValue(value) + "\n")
+                tokenizer.advance()
+
+            # End of tokenizing
+            fp.write("</tokens>")
+
+
+        print("> File data: \'{0}\', \'{1}\', \'{2}\'".format(
+            file_data.filename, file_data.input_path(), file_data.output_path()))
 
 def main():
     """

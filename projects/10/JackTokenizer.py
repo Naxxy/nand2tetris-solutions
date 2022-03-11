@@ -11,6 +11,20 @@ class TokenType(IntEnum):
     INT_CONST = 3,
     STRING_CONST = 4
 
+    def tag(self) -> str:
+        if self == TokenType.KEYWORD:
+            tag = "keyword"
+        elif self == TokenType.SYMBOL:
+            tag = "symbol"
+        elif self == TokenType.IDENTIFIER:
+            tag = "identifier"
+        elif self == TokenType.INT_CONST:
+            tag = "integerConstant"
+        elif self == TokenType.STRING_CONST:
+            tag = "stringConstant"
+
+        return tag
+
     def tagWithValue(self, value) -> str:
         if self == TokenType.KEYWORD:
             tag = "keyword"
@@ -25,7 +39,7 @@ class TokenType(IntEnum):
         elif self == TokenType.STRING_CONST:
             tag = "stringConstant"
 
-        return "<{0}>{1}</{0}>".format(tag, value)
+        return "<{0}> {1} </{0}>".format(tag, value)
 
 class Keyword(IntEnum):
     CLASS = 0,
@@ -107,6 +121,18 @@ class JackTokenizer:
             self.fp = open(filepath, 'r')
         self.tokens = None
         self.token_index = 0
+        self.advance()
+
+    def __del__(self):
+        self.fp.close()
+
+    def __enter__(self):
+        # File already opened in initialiser
+        return self
+
+    def __exit__(self):
+        self.fp.close()
+        return
 
     # DONE
     def hasMoreTokens(self) -> bool:
@@ -246,7 +272,6 @@ if __name__ == "__main__":
     tokenizer = JackTokenizer("ArrayTest/Main.jack", False)
 
     while(tokenizer.hasMoreTokens()):
-        tokenizer.advance()
         type = tokenizer.tokenType()
         if type == TokenType.KEYWORD:
             value = tokenizer.keyWord()
@@ -260,5 +285,6 @@ if __name__ == "__main__":
             value = tokenizer.stringVal()
         else:
             value = None
+        tokenizer.advance()
 
         print(type.tagWithValue(value))
