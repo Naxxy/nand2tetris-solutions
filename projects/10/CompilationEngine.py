@@ -41,19 +41,33 @@ class CompilationEngine:
         </class>
         """
         root = Element("class")
+        error = None
 
-        child = self._addKeyword(root)          # Class
-        child = self._addIdentifier(root)       # ClassName
-        child = self._addSymbol(root)           # {
+        print("COMPILE CLASS")
+        root.append(Comment('COMPILE CLASS'))
 
-        # self.compileSubroutine()                # subroutineDec
+        child = self._addKeyword(root, True)          # Class
+        child = self._addIdentifier(root, True)       # ClassName
+        child = self._addSymbol(root, True)           # {
 
+        try:
+            type = TokenType.KEYWORD
+            while type == TokenType.KEYWORD:
+                type = self.tokenizer.tokenType()
+                value = self.tokenizer.keyWord()
+                if value in [Keyword.CONSTRUCTOR, Keyword.FUNCTION, Keyword.METHOD]:
+                    self.compileSubroutine(root)
+                elif value in [Keyword.STATIC, Keyword.FIELD]:
+                    self.compileClassVarDec(root)
 
-        # child = self._addSymbol(root)           # }
-
-        with open(self.file_data.output_path(), 'w') as fp:
-            fp.write(self._prettify(root))
-
+            child = self._addSymbol(root, True)           # }
+        except Exception as e:
+            error = e
+        finally:
+            with open(self.file_data.output_path(), 'w') as fp:
+                fp.write(self._prettify(root))
+            if error:
+                raise error
 
     def compileClassVarDec(self):
         """
@@ -199,7 +213,7 @@ class CompilationEngine:
         type = self.tokenizer.tokenType()
 
         if advance:
-        self.tokenizer.advance()
+            self.tokenizer.advance()
 
         child = SubElement(parent, type.tag())
         child.text = " " + keyword.stringValue() + " "
@@ -211,7 +225,7 @@ class CompilationEngine:
         type = self.tokenizer.tokenType()
 
         if advance:
-        self.tokenizer.advance()
+            self.tokenizer.advance()
 
         child = SubElement(parent, type.tag())
         child.text = " " + identifier + " "
@@ -223,7 +237,7 @@ class CompilationEngine:
         type = self.tokenizer.tokenType()
 
         if advance:
-        self.tokenizer.advance()
+            self.tokenizer.advance()
 
         child = SubElement(parent, type.tag())
         child.text = " " + saxutils.escape(symbol) + " "
