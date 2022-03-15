@@ -11,6 +11,8 @@ class CompilationEngine:
     fp_in = None
     tokenizer = None
     file_data = None
+    operators_list = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
+    unary_operators_list = ['-', '~']
 
     def __init__(self, file_data: FileData):
         self.tokenizer = JackTokenizer(file_data.input_path())
@@ -277,15 +279,27 @@ class CompilationEngine:
 
         return node
 
+    # DONE?
     def compileExpression(self):
-        pass
+        print("COMPILE EXPRESSION")
+        parent.append(Comment('COMPILE EXPRESSION'))
+        node = SubElement(parent, 'expression')
 
+        self.compileTerm(node)                  # term
+        while self._tokenizerValue() in self.operators_list:
+            self._addSymbol(node, True)         # op
+            self.compileTerm(node)              # term
+
+        return node
+
+    # TODO
     def compileTerm(self):
         pass
 
     def compileExpressionList(self):
         pass
 
+    # DONE?
     def compileStringConstant(self, parent):
         print("COMPILE STRING CONSTANT")
         parent.append(Comment('COMPILE STRING CONSTANT'))
@@ -295,6 +309,7 @@ class CompilationEngine:
 
         return node
 
+    # DONE?
     def compileIntegerConstant(self, parent):
         print("COMPILE INTEGER CONSTANT")
         parent.append(Comment('COMPILE INTEGER CONSTANT'))
@@ -303,8 +318,6 @@ class CompilationEngine:
         self._addIntConstant(node)
 
         return node
-
-
 
 
     ###########
