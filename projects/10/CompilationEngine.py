@@ -205,6 +205,27 @@ class CompilationEngine:
     def compileExpressionList(self):
         pass
 
+    def compileStringConstant(self, parent):
+        print("COMPILE STRING CONSTANT")
+        parent.append(Comment('COMPILE STRING CONSTANT'))
+        node = SubElement(parent, 'stringConstant')
+
+        self._addStringConstant(node)
+
+        return node
+
+    def compileIntegerConstant(self, parent):
+        print("COMPILE INTEGER CONSTANT")
+        parent.append(Comment('COMPILE INTEGER CONSTANT'))
+        node = SubElement(parent, 'integerConstant')
+
+        self._addIntConstant(node)
+
+        return node
+
+
+
+
     ###########
     # HELPERS #
     ###########
@@ -267,6 +288,30 @@ class CompilationEngine:
 
         child = SubElement(parent, type.tag())
         child.text = " " + saxutils.escape(symbol) + " "
+
+        return child
+
+    def _addStringConstant(self, parent: Element, advance = False):
+        string = self.tokenizer.stringVal()
+        type = self.tokenizer.tokenType()
+
+        if advance:
+            self.tokenizer.advance()
+
+        child = SubElement(parent, type.tag())
+        child.text = " " + string + " "
+
+        return child
+
+    def _addIntConstant(self, parent: Element, advance = False):
+        integer = self.tokenizer.intVal()
+        type = self.tokenizer.tokenType()
+
+        if advance:
+            self.tokenizer.advance()
+
+        child = SubElement(parent, type.tag())
+        child.text = " " + str(integer) + " "
 
         return child
 
