@@ -32,18 +32,9 @@ class CompilationEngine:
     #################
     # CLASS METHODS #
     #################
-    
+
     # DONE
     def compileClass(self):
-        """
-        <class>
-          <keyword> class </keyword>
-          <identifier> Main </identifier>
-          <symbol> { </symbol>
-          <subroutineDec> ... </subroutineDec>
-          <symbol> } </symbol>
-        </class>
-        """
         root = Element("class")
         error = None
 
@@ -73,16 +64,28 @@ class CompilationEngine:
             if error:
                 raise error
 
+    # DONE
     def compileClassVarDec(self, parent):
-        """
-        <classVarDec>
-          <keyword> static </keyword>
-          <keyword> boolean </keyword>
-          <identifier> test </identifier>
-          <symbol> ; </symbol>
-        </classVarDec>
-        """
-        pass
+        print("COMPILE CLASS VARIABLE DECLARATION")
+        parent.append(Comment('COMPILE CLASS VARIABLE DECLARATION'))
+        node = SubElement(parent, 'classVarDec')
+
+        self._addKeyword(node, True)                  # (static | field)
+        if self.tokenizer.tokenType() == TokenType.IDENTIFIER:
+            self._addIdentifier(node, True)           # className
+        else:
+            self._addKeyword(node, True)              # (int | boolean | char)
+
+        self._addIdentifier(node, True)               # varName
+        value = self._tokenizerValue(raw=True)
+        while value != ';':
+            self._addSymbol(node, True)               # ','
+            self._addIdentifier(node, True)           # varName
+            value = self._tokenizerValue(raw=True)
+
+        self._addSymbol(node, True)                   # ';'
+
+        return node
 
     # DONE
     def compileSubroutine(self, parent):
@@ -139,36 +142,41 @@ class CompilationEngine:
         parent.append(Comment('COMPILE SUBROUTINE BODY'))
         node = SubElement(parent, 'subroutineBody')
 
-        self._addSymbol(node, True)                 # {
+        self._addSymbol(node, True)                         # {
         while True:
             value = self._tokenizerValue(raw=True)
             if value == Keyword.VAR:
-        self.compileVarDec(node)                    # varDec*
+                self.compileVarDec(node)                    # varDec*
             elif value == '}':
-        self._addSymbol(node, True)                 # }
+                self._addSymbol(node, True)                 # }
                 break
             else:
                 self.compileStatements(node)                # statements
 
         return node
 
+    # DONE
     def compileVarDec(self, parent):
-        """
-        Example:
-            <varDec>
-              <keyword> var </keyword>
-              <identifier> Array </identifier>
-              <identifier> a </identifier>
-              <symbol> ; </symbol>
-            </varDec>
-        """
+        print("COMPILE VARIABLE DECLARATION")
+        parent.append(Comment('COMPILE VARIABLE DECLARATION'))
+        node = SubElement(parent, 'varDec')
 
-        # Starts with 'var'
-        # followed by type = identifier?
-        # followed by var name = identifier?
-        # loop - if starts with comma symbol, repeat
-        # Terminated by terminal symbol
-        pass
+        self._addKeyword(node, True)                  # var
+        if self.tokenizer.tokenType() == TokenType.IDENTIFIER:
+            self._addIdentifier(node, True)           # className
+        else:
+            self._addKeyword(node, True)              # (int | boolean | char)
+
+        self._addIdentifier(node, True)               # varName
+        value = self._tokenizerValue(raw=True)
+        while value != ';':
+            self._addSymbol(node, True)               # ','
+            self._addIdentifier(node, True)           # varName
+            value = self._tokenizerValue(raw=True)
+
+        self._addSymbol(node, True)                   # ';'
+
+        return node
 
     def compileStatements(self, parent):
         pass
