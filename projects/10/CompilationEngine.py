@@ -133,17 +133,22 @@ class CompilationEngine:
 
         return node
 
-    # TODO
+    # DONE
     def compileSubroutineBody(self, parent):
         print("COMPILE SUBROUTINE BODY")
         parent.append(Comment('COMPILE SUBROUTINE BODY'))
         node = SubElement(parent, 'subroutineBody')
 
         self._addSymbol(node, True)                 # {
+        while True:
+            value = self._tokenizerValue(raw=True)
+            if value == Keyword.VAR:
         self.compileVarDec(node)                    # varDec*
-        self.compileStatements(node)                # statements
+            elif value == '}':
         self._addSymbol(node, True)                 # }
-
+                break
+            else:
+                self.compileStatements(node)                # statements
 
         return node
 
