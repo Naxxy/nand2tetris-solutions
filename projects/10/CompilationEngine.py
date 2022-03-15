@@ -29,6 +29,10 @@ class CompilationEngine:
         self.fp_in.close()
         return
 
+    #################
+    # CLASS METHODS #
+    #################
+    
     # DONE
     def compileClass(self):
         """
@@ -69,7 +73,7 @@ class CompilationEngine:
             if error:
                 raise error
 
-    def compileClassVarDec(self):
+    def compileClassVarDec(self, parent):
         """
         <classVarDec>
           <keyword> static </keyword>
@@ -101,7 +105,7 @@ class CompilationEngine:
 
         return node
 
-    # DONE?
+    # DONE
     def compileParameterList(self, parent):
         print("COMPILE PARAMETER LIST")
         parent.append(Comment('COMPILE PARAMETER LIST'))
@@ -109,7 +113,6 @@ class CompilationEngine:
 
         value = self._tokenizerValue()
         while value != ')':
-            print(f'VALUE: {self.tokenizer.symbol()}, TOKENS: {self.tokenizer.tokens}')
             # Check the type
             type = self.tokenizer.tokenType()
 
@@ -136,9 +139,15 @@ class CompilationEngine:
         parent.append(Comment('COMPILE SUBROUTINE BODY'))
         node = SubElement(parent, 'subroutineBody')
 
+        self._addSymbol(node, True)                 # {
+        self.compileVarDec(node)                    # varDec*
+        self.compileStatements(node)                # statements
+        self._addSymbol(node, True)                 # }
+
+
         return node
 
-    def compileVarDec(self):
+    def compileVarDec(self, parent):
         """
         Example:
             <varDec>
@@ -156,7 +165,7 @@ class CompilationEngine:
         # Terminated by terminal symbol
         pass
 
-    def compileStatements(self):
+    def compileStatements(self, parent):
         pass
 
     def compileLet(self):
@@ -182,6 +191,10 @@ class CompilationEngine:
 
     def compileExpressionList(self):
         pass
+
+    ###########
+    # HELPERS #
+    ###########
 
     def _prettify(self, elem):
         """
