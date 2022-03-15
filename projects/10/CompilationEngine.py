@@ -178,23 +178,75 @@ class CompilationEngine:
 
         return node
 
+    # DONE
     def compileStatements(self, parent):
-        pass
+        print("COMPILE STATEMENTS")
+        parent.append(Comment('COMPILE STATEMENTS'))
+        node = SubElement(parent, 'statements')
 
-    def compileLet(self):
-        pass
+        while True:
+            value = self.tokenizer.keyWord()
+            if value == Keyword.LET:
+                self.compileLet(node)
+            elif value == Keyword.IF:
+                self.compileIf(node)
+            elif value == Keyword.WHILE:
+                self.compileWhile(node)
+            elif value == Keyword.DO:
+                self.compileDo(node)
+            elif value == Keyword.RETURN:
+                self.compileReturn(node)
+            else:
+                break
 
-    def compileIf(self):
-        pass
+        return node
 
-    def compileWhile(self):
-        pass
+    # DONE
+    def compileLet(self, parent):
+        print("COMPILE LET")
+        parent.append(Comment('COMPILE LET'))
+        node = SubElement(parent, 'letStatement')
 
-    def compileDo(self):
-        pass
+        self._addKeyword(node, True)                    # let
+        self._addIdentifier(node, True)                 # varName
+        if self._tokenizerValue() == '[':               # [ expression ]
+            self._addSymbol(node, True)
+            self.compileExpression(node)
+            self._addSymbol(node, True)
+        self._addSymbol(node, True)                     # '='
+        self.compileExpression()                        # expression
 
-    def compileReturn(self):
-        pass
+        self._addSymbol(node, True)                     # ';'
+
+        return node
+
+    def compileIf(self, parent):
+        print("COMPILE IF")
+        parent.append(Comment('COMPILE IF'))
+        node = SubElement(parent, 'ifStatement')
+
+        return node
+
+    def compileWhile(self, parent):
+        print("COMPILE WHILE")
+        parent.append(Comment('COMPILE WHILE'))
+        node = SubElement(parent, 'whileStatement')
+
+        return node
+
+    def compileDo(self, parent):
+        print("COMPILE DO")
+        parent.append(Comment('COMPILE DO'))
+        node = SubElement(parent, 'doStatement')
+
+        return node
+
+    def compileReturn(self, parent):
+        print("COMPILE RETURN")
+        parent.append(Comment('COMPILE RETURN'))
+        node = SubElement(parent, 'returnStatement')
+
+        return node
 
     def compileExpression(self):
         pass
