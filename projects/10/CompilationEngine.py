@@ -178,7 +178,7 @@ class CompilationEngine:
 
         return node
 
-    # DONE
+    # DONE?
     def compileStatements(self, parent):
         print("COMPILE STATEMENTS")
         parent.append(Comment('COMPILE STATEMENTS'))
@@ -201,7 +201,7 @@ class CompilationEngine:
 
         return node
 
-    # DONE
+    # DONE?
     def compileLet(self, parent):
         print("COMPILE LET")
         parent.append(Comment('COMPILE LET'))
@@ -220,20 +220,43 @@ class CompilationEngine:
 
         return node
 
+    # DONE?
     def compileIf(self, parent):
         print("COMPILE IF")
         parent.append(Comment('COMPILE IF'))
         node = SubElement(parent, 'ifStatement')
 
+        self._addKeyword(node, True)            # if
+        self._addSymbol(node, True)             # '('
+        self.compileExpression(node)            # expression
+        self._addSymbol(node, True)             # ')'
+        self._addSymbol(node, True)             # '{'
+        self.compileStatements(node)            # statements
+        self._addSymbol(node, True)             # '}'
+        if self._tokenizerValue(raw=True) == Keyword.ELSE:
+                self._addKeyword(node, True)            # else
+                self._addSymbol(node, True)             # '{'
+                self.compileStatements(node)            # statements
+                self._addSymbol(node, True)             # '}'
+
         return node
 
+    # DONE?
     def compileWhile(self, parent):
         print("COMPILE WHILE")
         parent.append(Comment('COMPILE WHILE'))
         node = SubElement(parent, 'whileStatement')
 
+        self._addKeyword(node, True)            # while
+        self._addSymbol(node, True)             # '('
+        self.compileExpression(node)            # expression
+        self._addSymbol(node, True)             # ')'
+        self._addSymbol(node, True)             # '{'
+        self.compileStatements(node)            # statements
+        self._addSymbol(node, True)             # '}'
         return node
 
+    # TODO
     def compileDo(self, parent):
         print("COMPILE DO")
         parent.append(Comment('COMPILE DO'))
@@ -241,10 +264,16 @@ class CompilationEngine:
 
         return node
 
+    # DONE?
     def compileReturn(self, parent):
         print("COMPILE RETURN")
         parent.append(Comment('COMPILE RETURN'))
         node = SubElement(parent, 'returnStatement')
+
+        self._addKeyword(node, True)            # return
+        if self._tokenizerValue() == ';':       # expression
+            self.compileExpression()
+        self._addSymbol(node, True)             # ';'
 
         return node
 
