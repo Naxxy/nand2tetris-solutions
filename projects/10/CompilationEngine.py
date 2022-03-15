@@ -11,8 +11,9 @@ class CompilationEngine:
     fp_in = None
     tokenizer = None
     file_data = None
-    operators_list = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
-    unary_operators_list = ['-', '~']
+    operators = ['+', '-', '*', '/', '&', '|', '<', '>', '=']
+    unary_operators = ['-', '~']
+    keyword_constants = [Keyword.TRUE, Keyword.FALSE, Keyword.NULL, Keyword.THIS]
 
     def __init__(self, file_data: FileData):
         self.tokenizer = JackTokenizer(file_data.input_path())
@@ -216,7 +217,7 @@ class CompilationEngine:
             self.compileExpression(node)
             self._addSymbol(node, True)
         self._addSymbol(node, True)                     # '='
-        self.compileExpression()                        # expression
+        self.compileExpression(node)                    # expression
 
         self._addSymbol(node, True)                     # ';'
 
@@ -280,24 +281,65 @@ class CompilationEngine:
         return node
 
     # DONE?
-    def compileExpression(self):
+    def compileExpression(self, parent):
         print("COMPILE EXPRESSION")
         parent.append(Comment('COMPILE EXPRESSION'))
         node = SubElement(parent, 'expression')
 
         self.compileTerm(node)                  # term
-        while self._tokenizerValue() in self.operators_list:
+        while self._tokenizerValue() in self.operators:
             self._addSymbol(node, True)         # op
             self.compileTerm(node)              # term
 
         return node
 
     # TODO
-    def compileTerm(self):
-        pass
+    def compileTerm(self, parent):
+        print("COMPILE TERM")
+        parent.append(Comment('COMPILE TERM'))
+        node = SubElement(parent, 'term')
 
-    def compileExpressionList(self):
-        pass
+        type = self.tokenizer.tokenType()
+        value = self._tokenizerValue(raw=True)
+        if type == TokenType.INT_CONST:
+            self.compileIntegerConstant(node)       # integerConstant
+        elif type == TokenType.STRING_CONST:
+            self.compileStringConstant(node)        # stringConstant
+        elif value in self.keyword_constants:       # keywordConstant
+            self._addKeyword(node, True)
+        elif value in self.unary_operators:         # unaryOp term
+            self._addSymbol(node, True)
+            self.compileTerm(node)
+        elif value == '(':                          # ( expression )
+            self._addSymbol(node, True)
+            self.compileExpression(node)
+            self._addSymbol(node, True)
+        else:                                       # subroutineCall
+            self._addIdentifier(node, True)
+            if self._tokenizerValue() == '(':                   # subroutineName
+                self._addSymbol(node, True)                     # (
+                self.compileExpressionList(node)                # expressionList
+                self._addSymbol(node, True)                     # )
+
+            else:                                               # className | varName
+                self._addSymbol(node, True)                     # .
+                self._addIdentifier(node, True)                 # subroutineName
+                self._addSymbol(node, True)                     # (
+                self.compileExpressionList(node)                # expressionList
+                self._addSymbol(node, True)                     # )
+
+        # TODO: varName [ expression ]
+        # TODO: varName
+
+        return node
+
+    # TODO
+    def compileExpressionList(self, parent):
+        print("COMPILE EXPRESSION LIST")
+        parent.append(Comment('COMPILE EXPRESSION LIST'))
+        node = SubElement(parent, 'expressionList')
+
+        return node
 
     # DONE?
     def compileStringConstant(self, parent):
