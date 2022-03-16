@@ -346,23 +346,25 @@ class CompilationEngine:
 
         return node
 
-    # DONE?
+    # DONE
     def compileStringConstant(self, parent):
         print("COMPILE STRING CONSTANT")
         parent.append(Comment('COMPILE STRING CONSTANT'))
         node = SubElement(parent, 'stringConstant')
+        node.text = " " + str(self.tokenizer.stringVal()) + " "
 
-        self._addStringConstant(node, True)
+        self.tokenizer.advance()
 
         return node
 
-    # DONE?
+    # DONE
     def compileIntegerConstant(self, parent):
         print("COMPILE INTEGER CONSTANT")
         parent.append(Comment('COMPILE INTEGER CONSTANT'))
         node = SubElement(parent, 'integerConstant')
+        node.text = " " + str(self.tokenizer.intVal()) + " "
 
-        self._addIntConstant(node, True)
+        self.tokenizer.advance()
 
         return node
 
@@ -432,29 +434,7 @@ class CompilationEngine:
 
         return child
 
-    def _addStringConstant(self, parent: Element, advance = False):
-        string = self.tokenizer.stringVal()
-        type = self.tokenizer.tokenType()
 
-        if advance:
-            self.tokenizer.advance()
-
-        child = SubElement(parent, type.tag())
-        child.text = " " + string + " "
-
-        return child
-
-    def _addIntConstant(self, parent: Element, advance = False):
-        integer = self.tokenizer.intVal()
-        type = self.tokenizer.tokenType()
-
-        if advance:
-            self.tokenizer.advance()
-
-        child = SubElement(parent, type.tag())
-        child.text = " " + str(integer) + " "
-
-        return child
 
 
 if __name__ == "__main__":
