@@ -188,6 +188,10 @@ class CompilationEngine:
         node = SubElement(parent, 'statements')
 
         while True:
+            type = self.tokenizer.tokenType()
+            if type != TokenType.KEYWORD:
+                break
+
             value = self.tokenizer.keyWord()
             if value == Keyword.LET:
                 self.compileLet(node)
@@ -278,8 +282,8 @@ class CompilationEngine:
         node = SubElement(parent, 'returnStatement')
 
         self._addKeyword(node, True)            # return
-        if self._tokenizerValue() == ';':       # expression
-            self.compileExpression()
+        if self._tokenizerValue() != ';':       # expression
+            self.compileExpression(node)
         self._addSymbol(node, True)             # ';'
 
         return node
@@ -297,7 +301,7 @@ class CompilationEngine:
 
         return node
 
-    # TODO - fix varname cases
+    # DONE?
     def compileTerm(self, parent):
         print("COMPILE TERM")
         parent.append(Comment('COMPILE TERM'))
