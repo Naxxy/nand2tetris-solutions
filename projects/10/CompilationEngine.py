@@ -293,7 +293,7 @@ class CompilationEngine:
 
         return node
 
-    # TODO
+    # TODO - fix varname cases
     def compileTerm(self, parent):
         print("COMPILE TERM")
         parent.append(Comment('COMPILE TERM'))
@@ -333,11 +333,16 @@ class CompilationEngine:
 
         return node
 
-    # TODO
+    # TODO - fix case of no expressions
     def compileExpressionList(self, parent):
         print("COMPILE EXPRESSION LIST")
         parent.append(Comment('COMPILE EXPRESSION LIST'))
         node = SubElement(parent, 'expressionList')
+
+        self.compileExpression(node)                # expression
+        while self._tokenizerValue() == ',':
+            self._addSymbol(node, True)         # ,
+            self.compileExpression(node)            # expression
 
         return node
 
@@ -347,7 +352,7 @@ class CompilationEngine:
         parent.append(Comment('COMPILE STRING CONSTANT'))
         node = SubElement(parent, 'stringConstant')
 
-        self._addStringConstant(node)
+        self._addStringConstant(node, True)
 
         return node
 
@@ -357,7 +362,7 @@ class CompilationEngine:
         parent.append(Comment('COMPILE INTEGER CONSTANT'))
         node = SubElement(parent, 'integerConstant')
 
-        self._addIntConstant(node)
+        self._addIntConstant(node, True)
 
         return node
 
