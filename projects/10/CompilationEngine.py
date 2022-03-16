@@ -39,8 +39,6 @@ class CompilationEngine:
     # DONE
     def compileClass(self):
         root = Element("class")
-        error = None
-
         print("COMPILE CLASS")
         root.append(Comment('COMPILE CLASS'))
 
@@ -48,24 +46,20 @@ class CompilationEngine:
         child = self._addIdentifier(root, True)       # ClassName
         child = self._addSymbol(root, True)           # {
 
-        try:
-            type = TokenType.KEYWORD
-            while type == TokenType.KEYWORD:
-                type = self.tokenizer.tokenType()
-                value = self.tokenizer.keyWord()
-                if value in [Keyword.CONSTRUCTOR, Keyword.FUNCTION, Keyword.METHOD]:
-                    self.compileSubroutine(root)
-                elif value in [Keyword.STATIC, Keyword.FIELD]:
-                    self.compileClassVarDec(root)
+        type = TokenType.KEYWORD
+        while type == TokenType.KEYWORD:
+            value = self.tokenizer.keyWord()
+            if value in [Keyword.CONSTRUCTOR, Keyword.FUNCTION, Keyword.METHOD]:
+                self.compileSubroutine(root)
+            elif value in [Keyword.STATIC, Keyword.FIELD]:
+                self.compileClassVarDec(root)
 
-            child = self._addSymbol(root, True)           # }
-        except Exception as e:
-            error = e
-        finally:
-            with open(self.file_data.output_path(), 'w') as fp:
-                fp.write(self._prettify(root))
-            if error:
-                raise error
+            type = self.tokenizer.tokenType()
+
+        child = self._addSymbol(root, True)           # }
+
+        with open(self.file_data.output_path(), 'w') as fp:
+            fp.write(self._prettify(root))
 
     # DONE
     def compileClassVarDec(self, parent):
@@ -325,7 +319,7 @@ class CompilationEngine:
         elif type == TokenType.IDENTIFIER:
             (type, value) = self.tokenizer.peek()
             if value == '[':                        # varName [ expression ]
-            self._addIdentifier(node, True)
+                self._addIdentifier(node, True)
                 self._addSymbol(node, True)
                 self.compileExpression(node)
                 self._addSymbol(node, True)
