@@ -407,7 +407,7 @@ class CompilationEngine:
         keyword = self.tokenizer.keyWord()
         type = self.tokenizer.tokenType()
 
-        if advance:
+        if advance and self.tokenizer.hasMoreTokens():
             self.tokenizer.advance()
 
         child = SubElement(parent, type.tag())
@@ -419,7 +419,7 @@ class CompilationEngine:
         identifier = self.tokenizer.identifier()
         type = self.tokenizer.tokenType()
 
-        if advance:
+        if advance and self.tokenizer.hasMoreTokens():
             self.tokenizer.advance()
 
         child = SubElement(parent, type.tag())
@@ -431,7 +431,7 @@ class CompilationEngine:
         symbol = self.tokenizer.symbol()
         type = self.tokenizer.tokenType()
 
-        if advance:
+        if advance and self.tokenizer.hasMoreTokens():
             self.tokenizer.advance()
 
         child = SubElement(parent, type.tag())
