@@ -168,6 +168,39 @@ class JackTokenizer:
                 next_line = self.fp.readline()
                 self.tokens = self._tokensForLine(next_line)
 
+    # CHECK
+    def peek(self):
+        # Save state
+        cursor_position = self.fp.tell()
+        token_index = self.token_index
+        tokens = self.tokens
+
+        self.advance()
+
+        # Get values
+        type = self.tokenType()
+        if type == TokenType.KEYWORD:
+            value = self.keyWord()
+        elif type == TokenType.SYMBOL:
+            value = self.symbol()
+        elif type == TokenType.IDENTIFIER:
+            value = self.identifier()
+        elif type == TokenType.INT_CONST:
+            value = self.intVal()
+        elif type == TokenType.STRING_CONST:
+            value = self.stringVal()
+        else:
+            raise Exception("Invalid token type in peek")
+
+        # Restore state
+        self.fp.seek(cursor_position)
+        self.token_index = token_index
+        self.tokens = tokens
+
+        print(self.tokens)
+        return (type, value)
+
+
     # DONE
     def tokenType(self) -> TokenType:
         token = self.tokens[self.token_index]
