@@ -259,11 +259,15 @@ class CompilationEngine:
         self._addSymbol(node, True)             # '}'
         return node
 
-    # TODO
+    # DONE?
     def compileDo(self, parent):
         print("COMPILE DO")
         parent.append(Comment('COMPILE DO'))
         node = SubElement(parent, 'doStatement')
+
+        self._addKeyword(node, True)            # do
+        self._addSubroutineCall(node)            # expression
+        self._addSymbol(node, True)             # ';'
 
         return node
 
@@ -314,22 +318,19 @@ class CompilationEngine:
             self._addSymbol(node, True)
             self.compileExpression(node)
             self._addSymbol(node, True)
-        else:                                       # subroutineCall
+        elif type == TokenType.IDENTIFIER:
+            (type, value) = self.tokenizer.peek()
+            if value == '[':                        # varName [ expression ]
             self._addIdentifier(node, True)
-            if self._tokenizerValue() == '(':                   # subroutineName
-                self._addSymbol(node, True)                     # (
-                self.compileExpressionList(node)                # expressionList
-                self._addSymbol(node, True)                     # )
-
-            else:                                               # className | varName
-                self._addSymbol(node, True)                     # .
-                self._addIdentifier(node, True)                 # subroutineName
-                self._addSymbol(node, True)                     # (
-                self.compileExpressionList(node)                # expressionList
-                self._addSymbol(node, True)                     # )
-
-        # TODO: varName [ expression ]
-        # TODO: varName
+                self._addSymbol(node, True)
+                self.compileExpression(node)
+                self._addSymbol(node, True)
+            elif value in ['(', '.']:               # subroutineCall
+                self._addSubroutineCall(node)
+            else:
+                self._addIdentifier(node, True)     # varName
+        else:
+            node.append(Comment(f'ILLEGAL CASE! \"{self.tokenizer.tokenType().tag()}\" - \"{self._tokenizerValue()}\"'))
 
         return node
 
@@ -434,7 +435,19 @@ class CompilationEngine:
 
         return child
 
+    def _addSubroutineCall(self, node):
+        self._addIdentifier(node, True)
+        if self._tokenizerValue() == '(':                   # subroutineName
+            self._addSymbol(node, True)                     # (
+            self.compileExpressionList(node)                # expressionList
+            self._addSymbol(node, True)                     # )
 
+        else:                                               # className | varName
+            self._addSymbol(node, True)                     # .
+            self._addIdentifier(node, True)                 # subroutineName
+            self._addSymbol(node, True)                     # (
+            self.compileExpressionList(node)                # expressionList
+            self._addSymbol(node, True)                     # )
 
 
 if __name__ == "__main__":
