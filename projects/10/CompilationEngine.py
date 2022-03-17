@@ -42,7 +42,7 @@ class CompilationEngine:
         root = Element("class")
         print("COMPILE CLASS")
         if self.write_comments:
-        root.append(Comment('COMPILE CLASS'))
+            root.append(Comment('COMPILE CLASS'))
 
         child = self._addKeyword(root, True)          # Class
         child = self._addIdentifier(root, True)       # ClassName
@@ -67,7 +67,7 @@ class CompilationEngine:
     def compileClassVarDec(self, parent):
         print("COMPILE CLASS VARIABLE DECLARATION")
         if self.write_comments:
-        parent.append(Comment('COMPILE CLASS VARIABLE DECLARATION'))
+            parent.append(Comment('COMPILE CLASS VARIABLE DECLARATION'))
         node = SubElement(parent, 'classVarDec')
 
         self._addKeyword(node, True)                  # (static | field)
@@ -91,7 +91,7 @@ class CompilationEngine:
     def compileSubroutine(self, parent):
         print("COMPILE SUBROUTINE")
         if self.write_comments:
-        parent.append(Comment('COMPILE SUBROUTINE'))
+            parent.append(Comment('COMPILE SUBROUTINE'))
         node = SubElement(parent, 'subroutineDec')
 
         self._addKeyword(node, True)                # (constructor | function | method)
@@ -113,7 +113,7 @@ class CompilationEngine:
     def compileParameterList(self, parent):
         print("COMPILE PARAMETER LIST")
         if self.write_comments:
-        parent.append(Comment('COMPILE PARAMETER LIST'))
+            parent.append(Comment('COMPILE PARAMETER LIST'))
         node = SubElement(parent, 'parameterList')
 
         value = self._tokenizerValue()
@@ -142,7 +142,7 @@ class CompilationEngine:
     def compileSubroutineBody(self, parent):
         print("COMPILE SUBROUTINE BODY")
         if self.write_comments:
-        parent.append(Comment('COMPILE SUBROUTINE BODY'))
+            parent.append(Comment('COMPILE SUBROUTINE BODY'))
         node = SubElement(parent, 'subroutineBody')
 
         self._addSymbol(node, True)                         # {
@@ -162,7 +162,7 @@ class CompilationEngine:
     def compileVarDec(self, parent):
         print("COMPILE VARIABLE DECLARATION")
         if self.write_comments:
-        parent.append(Comment('COMPILE VARIABLE DECLARATION'))
+            parent.append(Comment('COMPILE VARIABLE DECLARATION'))
         node = SubElement(parent, 'varDec')
 
         self._addKeyword(node, True)                  # var
@@ -186,7 +186,7 @@ class CompilationEngine:
     def compileStatements(self, parent):
         print("COMPILE STATEMENTS")
         if self.write_comments:
-        parent.append(Comment('COMPILE STATEMENTS'))
+            parent.append(Comment('COMPILE STATEMENTS'))
         node = SubElement(parent, 'statements')
 
         while True:
@@ -214,7 +214,7 @@ class CompilationEngine:
     def compileLet(self, parent):
         print("COMPILE LET")
         if self.write_comments:
-        parent.append(Comment('COMPILE LET'))
+            parent.append(Comment('COMPILE LET'))
         node = SubElement(parent, 'letStatement')
 
         self._addKeyword(node, True)                    # let
@@ -234,7 +234,7 @@ class CompilationEngine:
     def compileIf(self, parent):
         print("COMPILE IF")
         if self.write_comments:
-        parent.append(Comment('COMPILE IF'))
+            parent.append(Comment('COMPILE IF'))
         node = SubElement(parent, 'ifStatement')
 
         self._addKeyword(node, True)            # if
@@ -256,7 +256,7 @@ class CompilationEngine:
     def compileWhile(self, parent):
         print("COMPILE WHILE")
         if self.write_comments:
-        parent.append(Comment('COMPILE WHILE'))
+            parent.append(Comment('COMPILE WHILE'))
         node = SubElement(parent, 'whileStatement')
 
         self._addKeyword(node, True)            # while
@@ -272,7 +272,7 @@ class CompilationEngine:
     def compileDo(self, parent):
         print("COMPILE DO")
         if self.write_comments:
-        parent.append(Comment('COMPILE DO'))
+            parent.append(Comment('COMPILE DO'))
         node = SubElement(parent, 'doStatement')
 
         self._addKeyword(node, True)            # do
@@ -285,7 +285,7 @@ class CompilationEngine:
     def compileReturn(self, parent):
         print("COMPILE RETURN")
         if self.write_comments:
-        parent.append(Comment('COMPILE RETURN'))
+            parent.append(Comment('COMPILE RETURN'))
         node = SubElement(parent, 'returnStatement')
 
         self._addKeyword(node, True)            # return
@@ -299,7 +299,7 @@ class CompilationEngine:
     def compileExpression(self, parent):
         print("COMPILE EXPRESSION")
         if self.write_comments:
-        parent.append(Comment('COMPILE EXPRESSION'))
+            parent.append(Comment('COMPILE EXPRESSION'))
         node = SubElement(parent, 'expression')
 
         self.compileTerm(node)                  # term
@@ -313,7 +313,7 @@ class CompilationEngine:
     def compileTerm(self, parent):
         print("COMPILE TERM")
         if self.write_comments:
-        parent.append(Comment('COMPILE TERM'))
+            parent.append(Comment('COMPILE TERM'))
         node = SubElement(parent, 'term')
 
         type = self.tokenizer.tokenType()
@@ -347,17 +347,29 @@ class CompilationEngine:
 
         return node
 
-    # TODO - fix case of no expressions
+    # DONE
     def compileExpressionList(self, parent):
         print("COMPILE EXPRESSION LIST")
         if self.write_comments:
-        parent.append(Comment('COMPILE EXPRESSION LIST'))
+            parent.append(Comment('COMPILE EXPRESSION LIST'))
         node = SubElement(parent, 'expressionList')
 
-        self.compileExpression(node)                # expression
-        while self._tokenizerValue() == ',':
-            self._addSymbol(node, True)         # ,
-            self.compileExpression(node)            # expression
+        type = self.tokenizer.tokenType()
+        value = self._tokenizerValue()
+        integerConstant = type == TokenType.INT_CONST
+        stringConstant = type == TokenType.STRING_CONST
+        keywordConstant = value in self.keyword_constants
+        unaryOpCondition = value in self.unary_operators
+        expressionCondition = value == '('
+        otherConditions = type == TokenType.IDENTIFIER
+
+        if integerConstant or stringConstant or keywordConstant or \
+            unaryOpCondition or expressionCondition or otherConditions:
+
+            self.compileExpression(node)                # expression
+            while self._tokenizerValue() == ',':
+                self._addSymbol(node, True)         # ,
+                self.compileExpression(node)            # expression
 
         return node
 
@@ -365,7 +377,7 @@ class CompilationEngine:
     def compileStringConstant(self, parent):
         print("COMPILE STRING CONSTANT")
         if self.write_comments:
-        parent.append(Comment('COMPILE STRING CONSTANT'))
+            parent.append(Comment('COMPILE STRING CONSTANT'))
         node = SubElement(parent, 'stringConstant')
         node.text = " " + str(self.tokenizer.stringVal()) + " "
 
@@ -377,7 +389,7 @@ class CompilationEngine:
     def compileIntegerConstant(self, parent):
         print("COMPILE INTEGER CONSTANT")
         if self.write_comments:
-        parent.append(Comment('COMPILE INTEGER CONSTANT'))
+            parent.append(Comment('COMPILE INTEGER CONSTANT'))
         node = SubElement(parent, 'integerConstant')
         node.text = " " + str(self.tokenizer.intVal()) + " "
 
