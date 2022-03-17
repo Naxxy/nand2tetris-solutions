@@ -15,10 +15,11 @@ class CompilationEngine:
     unary_operators = ['-', '~']
     keyword_constants = [Keyword.TRUE, Keyword.FALSE, Keyword.NULL, Keyword.THIS]
 
-    def __init__(self, file_data: FileData):
+    def __init__(self, file_data: FileData, write_comments = False):
         self.tokenizer = JackTokenizer(file_data.input_path())
         self.fp_in = open(file_data.input_path(), 'r')
         self.file_data = file_data
+        self.write_comments = write_comments
         self.compileClass()
 
     def __del__(self):
@@ -40,6 +41,7 @@ class CompilationEngine:
     def compileClass(self):
         root = Element("class")
         print("COMPILE CLASS")
+        if self.write_comments:
         root.append(Comment('COMPILE CLASS'))
 
         child = self._addKeyword(root, True)          # Class
@@ -64,6 +66,7 @@ class CompilationEngine:
     # DONE
     def compileClassVarDec(self, parent):
         print("COMPILE CLASS VARIABLE DECLARATION")
+        if self.write_comments:
         parent.append(Comment('COMPILE CLASS VARIABLE DECLARATION'))
         node = SubElement(parent, 'classVarDec')
 
@@ -87,6 +90,7 @@ class CompilationEngine:
     # DONE
     def compileSubroutine(self, parent):
         print("COMPILE SUBROUTINE")
+        if self.write_comments:
         parent.append(Comment('COMPILE SUBROUTINE'))
         node = SubElement(parent, 'subroutineDec')
 
@@ -108,6 +112,7 @@ class CompilationEngine:
     # DONE
     def compileParameterList(self, parent):
         print("COMPILE PARAMETER LIST")
+        if self.write_comments:
         parent.append(Comment('COMPILE PARAMETER LIST'))
         node = SubElement(parent, 'parameterList')
 
@@ -136,6 +141,7 @@ class CompilationEngine:
     # DONE
     def compileSubroutineBody(self, parent):
         print("COMPILE SUBROUTINE BODY")
+        if self.write_comments:
         parent.append(Comment('COMPILE SUBROUTINE BODY'))
         node = SubElement(parent, 'subroutineBody')
 
@@ -155,6 +161,7 @@ class CompilationEngine:
     # DONE
     def compileVarDec(self, parent):
         print("COMPILE VARIABLE DECLARATION")
+        if self.write_comments:
         parent.append(Comment('COMPILE VARIABLE DECLARATION'))
         node = SubElement(parent, 'varDec')
 
@@ -175,9 +182,10 @@ class CompilationEngine:
 
         return node
 
-    # DONE?
+    # DONE
     def compileStatements(self, parent):
         print("COMPILE STATEMENTS")
+        if self.write_comments:
         parent.append(Comment('COMPILE STATEMENTS'))
         node = SubElement(parent, 'statements')
 
@@ -202,9 +210,10 @@ class CompilationEngine:
 
         return node
 
-    # DONE?
+    # DONE
     def compileLet(self, parent):
         print("COMPILE LET")
+        if self.write_comments:
         parent.append(Comment('COMPILE LET'))
         node = SubElement(parent, 'letStatement')
 
@@ -221,9 +230,10 @@ class CompilationEngine:
 
         return node
 
-    # DONE?
+    # DONE
     def compileIf(self, parent):
         print("COMPILE IF")
+        if self.write_comments:
         parent.append(Comment('COMPILE IF'))
         node = SubElement(parent, 'ifStatement')
 
@@ -242,9 +252,10 @@ class CompilationEngine:
 
         return node
 
-    # DONE?
+    # DONE
     def compileWhile(self, parent):
         print("COMPILE WHILE")
+        if self.write_comments:
         parent.append(Comment('COMPILE WHILE'))
         node = SubElement(parent, 'whileStatement')
 
@@ -257,9 +268,10 @@ class CompilationEngine:
         self._addSymbol(node, True)             # '}'
         return node
 
-    # DONE?
+    # DONE
     def compileDo(self, parent):
         print("COMPILE DO")
+        if self.write_comments:
         parent.append(Comment('COMPILE DO'))
         node = SubElement(parent, 'doStatement')
 
@@ -269,9 +281,10 @@ class CompilationEngine:
 
         return node
 
-    # DONE?
+    # DONE
     def compileReturn(self, parent):
         print("COMPILE RETURN")
+        if self.write_comments:
         parent.append(Comment('COMPILE RETURN'))
         node = SubElement(parent, 'returnStatement')
 
@@ -282,9 +295,10 @@ class CompilationEngine:
 
         return node
 
-    # DONE?
+    # DONE
     def compileExpression(self, parent):
         print("COMPILE EXPRESSION")
+        if self.write_comments:
         parent.append(Comment('COMPILE EXPRESSION'))
         node = SubElement(parent, 'expression')
 
@@ -295,9 +309,10 @@ class CompilationEngine:
 
         return node
 
-    # DONE?
+    # DONE
     def compileTerm(self, parent):
         print("COMPILE TERM")
+        if self.write_comments:
         parent.append(Comment('COMPILE TERM'))
         node = SubElement(parent, 'term')
 
@@ -335,6 +350,7 @@ class CompilationEngine:
     # TODO - fix case of no expressions
     def compileExpressionList(self, parent):
         print("COMPILE EXPRESSION LIST")
+        if self.write_comments:
         parent.append(Comment('COMPILE EXPRESSION LIST'))
         node = SubElement(parent, 'expressionList')
 
@@ -348,6 +364,7 @@ class CompilationEngine:
     # DONE
     def compileStringConstant(self, parent):
         print("COMPILE STRING CONSTANT")
+        if self.write_comments:
         parent.append(Comment('COMPILE STRING CONSTANT'))
         node = SubElement(parent, 'stringConstant')
         node.text = " " + str(self.tokenizer.stringVal()) + " "
@@ -359,6 +376,7 @@ class CompilationEngine:
     # DONE
     def compileIntegerConstant(self, parent):
         print("COMPILE INTEGER CONSTANT")
+        if self.write_comments:
         parent.append(Comment('COMPILE INTEGER CONSTANT'))
         node = SubElement(parent, 'integerConstant')
         node.text = " " + str(self.tokenizer.intVal()) + " "
