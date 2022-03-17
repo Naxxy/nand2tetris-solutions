@@ -197,9 +197,7 @@ class JackTokenizer:
         self.token_index = token_index
         self.tokens = tokens
 
-        print(self.tokens)
         return (type, value)
-
 
     # DONE
     def tokenType(self) -> TokenType:
@@ -239,7 +237,7 @@ class JackTokenizer:
 
     # DONE
     def stringVal(self) -> str:
-        return str(self.tokens[self.token_index])
+        return str(self.tokens[self.token_index]).strip('"')
 
     # DONE
     def _tokensForLine(self, line):
