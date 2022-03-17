@@ -447,7 +447,7 @@ class CompilationEngine:
             self.tokenizer.advance()
 
         child = SubElement(parent, type.tag())
-        child.text = " " + saxutils.escape(symbol) + " "
+        child.text = " " + symbol + " "
 
         return child
 
