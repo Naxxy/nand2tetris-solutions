@@ -101,8 +101,11 @@ class JackTokenizer:
     fp = None
     tokens = None
     token_index = 0
+    section_comment = False
 
-    commentsRegex = re.compile(r".*(\/\/.*)|.*(\/\*\*.*\*\/)") # Assumes comments are one line only
+    lineCommentRegex = re.compile(r".*?(\/\/.*)")
+    sectionCommentOpenRegex = re.compile(r".*?(\/\*\*.*)")
+    sectionCommentCloseRegex = re.compile(r".*?(.*\*\/)")
     keywordRegex = re.compile('|'.join(['({})'.format(x) for x in Keyword.keywordList()]))
     symbolRegex = re.compile(r"^(\{|\}|\(|\)|\[|\]|\.|,|;|\+|-|\*|\/|&|\||<|>|=|~)")
     identifierRegex = re.compile(r"^([a-zA-Z][a-zA-Z0-9_]*)")
@@ -241,14 +244,34 @@ class JackTokenizer:
 
     # DONE
     def _tokensForLine(self, line):
-        # Strip comments
-        matches = self.commentsRegex.match(line)
+        tokens = None
+
+        # Check for section comments
+        if not self.section_comment:
+            matches = self.sectionCommentOpenRegex.match(line)
+            if matches:
+                self.section_comment = True
+                comment = matches.group(1)
+
+        if self.section_comment:
+            matches = self.sectionCommentCloseRegex.match(line)
+            if matches:
+                self.section_comment = False
+                comment = matches.group(1)
+                line = line.replace(comment, '')
+
+        # Check for tokens & single line comments
+        if not self.section_comment:
+
+            # Strip single line comments
+            matches = self.lineCommentRegex.match(line)
         if matches:
-            comment = matches.group(0)
-            line = self.commentsRegex.sub('', comment)
+                comment = matches.group(1)
+                line = line.replace(comment, '')
         if line.strip() == '' or line.strip() == '\n':
             return []
 
+            # Build tokens list
         original_line = line
         tokens = []
         while len(line):
