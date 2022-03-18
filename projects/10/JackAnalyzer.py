@@ -43,7 +43,9 @@ class JackAnalyser:
     def analyse(self):
         for file_data in self.file_data:
             print(file_data.input_path())
+            self._processTokensInFile(file_data)
             compiler = CompilationEngine(file_data)
+
             # self._processTokensInFile(file_data)
 
 
