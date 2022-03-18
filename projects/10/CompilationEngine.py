@@ -39,6 +39,7 @@ class CompilationEngine:
 
     # DONE
     def compileClass(self):
+        error = None
         root = Element("class")
         print("COMPILE CLASS")
         if self.write_comments:
@@ -48,20 +49,26 @@ class CompilationEngine:
         child = self._addIdentifier(root, True)       # ClassName
         child = self._addSymbol(root, True)           # {
 
-        type = TokenType.KEYWORD
-        while type == TokenType.KEYWORD:
-            value = self.tokenizer.keyWord()
-            if value in [Keyword.CONSTRUCTOR, Keyword.FUNCTION, Keyword.METHOD]:
-                self.compileSubroutine(root)
-            elif value in [Keyword.STATIC, Keyword.FIELD]:
-                self.compileClassVarDec(root)
+        try:
+            type = TokenType.KEYWORD
+            while type == TokenType.KEYWORD:
+                value = self.tokenizer.keyWord()
+                if value in [Keyword.CONSTRUCTOR, Keyword.FUNCTION, Keyword.METHOD]:
+                    self.compileSubroutine(root)
+                elif value in [Keyword.STATIC, Keyword.FIELD]:
+                    self.compileClassVarDec(root)
 
-            type = self.tokenizer.tokenType()
+                type = self.tokenizer.tokenType()
 
-        child = self._addSymbol(root, True)           # }
+            child = self._addSymbol(root, True)           # }
 
-        with open(self.file_data.output_path(), 'w') as fp:
-            fp.write(self._prettify(root))
+        except Exception as e:
+            error = e
+        finally:
+            with open(self.file_data.output_path(), 'w') as fp:
+                fp.write(self._prettify(root))
+            if error:
+                raise error
 
     # DONE
     def compileClassVarDec(self, parent):
@@ -115,6 +122,7 @@ class CompilationEngine:
         if self.write_comments:
             parent.append(Comment('COMPILE PARAMETER LIST'))
         node = SubElement(parent, 'parameterList')
+        node.text = ' '
 
         value = self._tokenizerValue()
         while value != ')':
